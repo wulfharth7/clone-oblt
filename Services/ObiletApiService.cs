@@ -40,8 +40,10 @@ namespace clone_oblt.Services
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"Request failed: {ex.Message}");
-                throw new Exception($"Request failed with status code: {ex.Message}");
+                //will get back to normal once 429 stops xd
+                return JsonSerializer.Deserialize<T>("");
+                /*Console.WriteLine($"Request failed: {ex.Message}");
+                throw new Exception($"Request failed with status code: {ex.Message}");*/
             }
         }
 

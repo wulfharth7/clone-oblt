@@ -15,7 +15,9 @@ namespace clone_oblt.Controllers
         {
             _journeysApiService = journeysApiService;
         }
-
+        //todo
+        //check for if origin and destination is same, shouldn't be.
+        //client checks this but someone may try to send request manually.
         [HttpPost("getjourneys")]
         public async Task<IActionResult> GetJourneys([FromBody] JourneyRequest journeyRequest)
         {

@@ -53,20 +53,52 @@ namespace clone_oblt.Controllers
                 }
                 else
                 {
-                    return BadRequest(new
+                    HttpContext.Session.SetString("session-id", "+Eqe+WzrJSYolfN+ulXchQQ0qhQEG5gqfBMqmwwuetQ=");
+                    HttpContext.Session.SetString("device-id", "VfH1N/wv59/yjYnlpCpcmQUCzoSAPQDxRiDjWENrXrg=");
+                    var responsee = new CreateSessionResponse
+                    {
+                        Data = new SessionData
+                        {
+                            SessionId = "+Eqe+WzrJSYolfN+ulXchQQ0qhQEG5gqfBMqmwwuetQ=",
+                            DeviceId = "VfH1N/wv59/yjYnlpCpcmQUCzoSAPQDxRiDjWENrXrg="
+                        }
+                    };
+                    return Ok(new
+                    {
+                        status = "Success",
+                        data = responsee.Data
+                    });
+                    //this will get back to working once 429 stops blocking me xd 
+                    /*return BadRequest(new
                     {
                         status = "Error",
                         message = "Failed to create session."
-                    });
+                    });*/
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
+                HttpContext.Session.SetString("session-id", "+Eqe+WzrJSYolfN+ulXchQQ0qhQEG5gqfBMqmwwuetQ=");
+                HttpContext.Session.SetString("device-id", "VfH1N/wv59/yjYnlpCpcmQUCzoSAPQDxRiDjWENrXrg=");
+                var response = new CreateSessionResponse{
+                    Data= new SessionData
+                    {
+                        SessionId= "+Eqe+WzrJSYolfN+ulXchQQ0qhQEG5gqfBMqmwwuetQ=",
+                        DeviceId= "VfH1N/wv59/yjYnlpCpcmQUCzoSAPQDxRiDjWENrXrg="
+                    }
+                };
+                return Ok(new
+                {
+                    status = "Success",
+                    data = response.Data
+                });
+                //will get back to normal after 429
+
+                /*return StatusCode(500, new
                 {
                     status = "Error",
                     message = $"Internal server error: {ex.Message}"
-                });
+                });*/
             }
         }
     }

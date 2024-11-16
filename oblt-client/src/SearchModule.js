@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box } from '@mui/material';
-
-//TO DO
-//Refactor the code, its a mess, but for the start its ok.
+import React, { useState, useEffect, useCallback } from 'react';
+import { TextField, Button, Box, Typography, Autocomplete, IconButton } from '@mui/material';
+import { SwapHoriz, LocationOn } from '@mui/icons-material';
 
 const SearchModule = () => {
   const [input1, setInput1] = useState('');
   const [input2, setInput2] = useState('');
-  const [sessionCreated, setSessionCreated] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const createSession = async () => {
     try {
@@ -16,7 +15,7 @@ const SearchModule = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -25,31 +24,31 @@ const SearchModule = () => {
 
       const data = await response.json();
       if (data.status === 'Success' && data.data) {
-        console.log('Session Created:', data);
-
         sessionStorage.setItem('session-id', data.data['session-id']);
         sessionStorage.setItem('device-id', data.data['device-id']);
-        setSessionCreated(true);
+        return true;
       } else {
         console.error('Failed to create session:', data.message);
+        return false;
       }
     } catch (error) {
       console.error('Error creating session:', error);
+      return false;
     }
   };
 
-  const fetchBusLocations = async (input) => {
+  const fetchBusLocations = async (query = null) => {
     try {
       const sessionId = sessionStorage.getItem('session-id');
       const deviceId = sessionStorage.getItem('device-id');
 
       if (!sessionId || !deviceId) {
         console.error('Session or Device ID is missing');
-        return;
+        return [];
       }
 
       const requestBody = {
-        data: input,
+        data: query,
         'device-session': {
           'session-id': sessionId,
           'device-id': deviceId,
@@ -64,7 +63,7 @@ const SearchModule = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
-        credentials: 'include' 
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -72,22 +71,76 @@ const SearchModule = () => {
       }
 
       const data = await response.json();
-      console.log('Bus Locations Response:', data);
+      if (data && data.data) {
+        return data.data;
+      }
+      return [];
     } catch (error) {
       console.error('Error fetching bus locations:', error);
+      return [];
     }
   };
 
-  useEffect(() => {
-    const sessionId = sessionStorage.getItem('session-id');
-    const deviceId = sessionStorage.getItem('device-id');
-
-    if (!sessionId || !deviceId) {
-      createSession();
-    } else {
-      setSessionCreated(true);
+  const loadInitialData = async () => {
+    try {
+      const data = await fetchBusLocations(null); // Use null for initial request
+      if (data.length > 0) {
+        const limitedSuggestions = data.slice(0, 10); // Limit initial suggestions to 10
+        setSuggestions(limitedSuggestions);
+        setInput1(limitedSuggestions[0]?.name || ''); // Prepopulate input1
+        setInput2(limitedSuggestions[0]?.name || ''); // Prepopulate input2
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading initial data:', error);
+      setLoading(false);
     }
+  };
+
+  const handleInputChange = async (event, newValue, setInput, setSuggestions) => {
+    setInput(newValue || '');
+    if (newValue) {
+      try {
+        const data = await fetchBusLocations(newValue);
+        setSuggestions(data.slice(0, 10)); // Limit dynamic suggestions to 10
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleValueChange = (event, newValue, setInput) => {
+    setInput(newValue || '');
+  };
+
+  const handleSwap = () => {
+    setInput1(input2);
+    setInput2(input1);
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      const sessionId = sessionStorage.getItem('session-id');
+      const deviceId = sessionStorage.getItem('device-id');
+
+      if (!sessionId || !deviceId) {
+        const sessionCreated = await createSession();
+        if (sessionCreated) {
+          await loadInitialData();
+        }
+      } else {
+        await loadInitialData();
+      }
+    };
+
+    initialize();
   }, []);
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <Box
@@ -95,37 +148,61 @@ const SearchModule = () => {
       justifyContent="center"
       alignItems="center"
       flexDirection="column"
-      padding={2}
+      padding={4}
+      bgcolor="#f9f9f9"
+      borderRadius={2}
+      boxShadow={3}
+      maxWidth="600px"
+      margin="auto"
     >
-      <h2>Search Module</h2>
-      <Box display="flex" gap={2} alignItems="center">
-        <TextField
-          label="Search Box 1"
-          variant="outlined"
-          value={input1}
-          onChange={(e) => {
-            setInput1(e.target.value);
-            if (e.target.value && sessionCreated) {
-              fetchBusLocations(e.target.value);
+      <Typography variant="h4" gutterBottom fontWeight="bold" color="primary.main">
+        Bus Location Search
+      </Typography>
+
+      <Box display="flex" gap={3} alignItems="center" width="100%">
+        <Box width="100%">
+          <Box display="flex" alignItems="center" gap={1}>
+            <LocationOn color="primary" />
+            <Typography variant="subtitle1" color="red" fontWeight="bold">From</Typography>
+          </Box>
+          <Autocomplete
+            value={input1}
+            onInputChange={(event, newValue) =>
+              handleInputChange(event, newValue, setInput1, setSuggestions)
             }
-          }}
-          fullWidth
-        />
-        <Button variant="contained" color="primary">
-          ↔️
+            onChange={(event, newValue) => handleValueChange(event, newValue, setInput1)}
+            options={suggestions.map((suggestion) => suggestion.name)}
+            renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+            freeSolo
+          />
+        </Box>
+
+        <IconButton color="primary" onClick={handleSwap}>
+          <SwapHoriz />
+        </IconButton>
+
+        <Box width="100%">
+          <Box display="flex" alignItems="center" gap={1}>
+            <LocationOn color="primary" />
+            <Typography variant="subtitle1" color="red" fontWeight="bold">To</Typography>
+          </Box>
+          <Autocomplete
+            value={input2}
+            onInputChange={(event, newValue) =>
+              handleInputChange(event, newValue, setInput2, setSuggestions)
+            }
+            onChange={(event, newValue) => handleValueChange(event, newValue, setInput2)}
+            options={suggestions.map((suggestion) => suggestion.name)}
+            renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+            freeSolo
+          />
+        </Box>
+      </Box>
+
+      <Box display="flex" justifyContent="flex-end" marginTop={2}>
+        <Button variant="contained" color="primary" size="large">
+          Search
         </Button>
-        <TextField
-          label="Search Box 2"
-          variant="outlined"
-          value={input2}
-          onChange={(e) => {
-            setInput2(e.target.value);
-            if (e.target.value && sessionCreated) {
-              fetchBusLocations(e.target.value);
-            }
-          }}
-          fullWidth
-        />
       </Box>
     </Box>
   );
