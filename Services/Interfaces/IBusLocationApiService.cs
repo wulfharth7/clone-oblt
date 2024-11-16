@@ -5,6 +5,6 @@ namespace clone_oblt.Services.Interfaces
 {
     public interface IBusLocationApiService
     {
-        Task<List<BusLocationData>> GetBusLocationsAsync();
+        Task<List<BusLocationData>> GetBusLocationsAsync(BusLocationRequest requestbody);
     }
 }

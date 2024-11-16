@@ -44,6 +44,7 @@ namespace clone_oblt.Controllers
                     HttpContext.Session.SetString("session-id", response.Data.SessionId);
                     HttpContext.Session.SetString("device-id", response.Data.DeviceId);
 
+                    
                     return Ok(new
                     {
                         status = "Success",

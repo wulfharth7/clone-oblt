@@ -6,78 +6,78 @@ namespace clone_oblt.Models
     public class BusLocationRequest
     {
         [JsonProperty("data")]
-        public string Data { get; set; }
+        public string? Data { get; set; }
 
         [JsonProperty("device-session")]
-        public DeviceSession DeviceSession { get; set; }
+        public DeviceSession? DeviceSession { get; set; }
 
         [JsonProperty("date")]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         [JsonProperty("language")]
-        public string Language { get; set; }
+        public string? Language { get; set; }
     }
 
     public class DeviceSession
     {
         [JsonProperty("session-id")]
-        public string SessionId { get; set; }
+        public string? SessionId { get; set; }
 
         [JsonProperty("device-id")]
-        public string DeviceId { get; set; }
+        public string? DeviceId { get; set; }
     }
 
     public class BusLocationResponse
     {
         [JsonProperty("status")]
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         [JsonProperty("data")]
-        public BusLocationData[] Data { get; set; }
+        public BusLocationData[]? Data { get; set; }
     }
 
     public class BusLocationData
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [JsonProperty("parent-id")]
         public int? ParentId { get; set; }
 
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public string? Type { get; set; }
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [JsonProperty("geo-location")]
-        public GeoLocation GeoLocation { get; set; }
+        public GeoLocation? GeoLocation { get; set; }
 
         [JsonProperty("tz-code")]
-        public string TzCode { get; set; }
+        public string? TzCode { get; set; }
 
         [JsonProperty("weather-code")]
-        public string WeatherCode { get; set; }
+        public string? WeatherCode { get; set; }
 
         [JsonProperty("rank")]
         public int? Rank { get; set; }
 
         [JsonProperty("reference-code")]
-        public string ReferenceCode { get; set; }
+        public string? ReferenceCode { get; set; }
 
         [JsonProperty("keywords")]
-        public string Keywords { get; set; }
+        public string? Keywords { get; set; }
     }
 
     public class GeoLocation
     {
         [JsonProperty("latitude")]
-        public double Latitude { get; set; }
+        public double? Latitude { get; set; }
 
         [JsonProperty("longitude")]
-        public double Longitude { get; set; }
+        public double? Longitude { get; set; }
 
         [JsonProperty("zoom")]
-        public int Zoom { get; set; }
+        public int? Zoom { get; set; }
     }
 }

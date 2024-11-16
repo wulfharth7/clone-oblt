@@ -28,20 +28,19 @@ namespace clone_oblt.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<List<BusLocationData>> GetBusLocationsAsync()
+        public async Task<List<BusLocationData>> GetBusLocationsAsync(BusLocationRequest requestbody)
         {
             var sessionId = _httpContextAccessor.HttpContext.Session.GetString("session-id");
             var deviceId = _httpContextAccessor.HttpContext.Session.GetString("device-id");
-
+            
+            Console.WriteLine($"ADŞLKFSAŞLFASLKFASF Session ID: {sessionId}, Device ID: {deviceId}");
             if (string.IsNullOrEmpty(sessionId) || string.IsNullOrEmpty(deviceId))
             {
                 throw new InvalidOperationException("Session ID or Device ID is missing.");
             }
-
             var request = new BusLocationRequest
             {
-                Data = "ova",                   //when i start developing the front-end side, this will change into a dynamic struct. right now
-                                                //to see that it works, I went along with a static query.
+                Data = requestbody.Data,                   
                 DeviceSession = new DeviceSession
                 {
                     SessionId = sessionId,
@@ -66,8 +65,6 @@ namespace clone_oblt.Services
                 response.EnsureSuccessStatusCode();
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var busLocationResponse = JsonConvert.DeserializeObject<BusLocationResponse>(responseContent);
-
-                // Return BusLocationData directly, no need for anonymous type
                 return busLocationResponse?.Data?.ToList();
             }
             catch (HttpRequestException ex)

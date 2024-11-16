@@ -12,15 +12,29 @@ builder.Services.AddHttpClient<IObiletApiService, ObiletApiService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IBusLocationApiService, BusLocationApiService>();
 builder.Services.AddScoped<IJourneysApiService, JourneysApiService>();
+builder.Services.AddControllers();
 builder.Services.AddSession(options =>
 {
-    options.Cookie.Name = ".Clone.Session";  
-    options.IdleTimeout = TimeSpan.FromMinutes(30); 
+    options.Cookie.Name = ".Clone.Session";
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true; 
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.None;  
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;  
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy => policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
 });
 
 var app = builder.Build();
+
+app.UseCors("AllowReactApp");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -29,10 +43,10 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseSession();
+
 
 app.UseRouting();
 

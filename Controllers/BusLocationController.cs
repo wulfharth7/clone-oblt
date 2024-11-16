@@ -1,4 +1,5 @@
-﻿using clone_oblt.Services.Interfaces;
+﻿using clone_oblt.Models;
+using clone_oblt.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -16,11 +17,11 @@ namespace clone_oblt.Controllers
         }
 
         [HttpPost("getbuslocations")]
-        public async Task<IActionResult> GetBusLocations()
+        public async Task<IActionResult> GetBusLocations([FromBody] BusLocationRequest requestbody)
         {
             try
             {
-                var busLocations = await _busLocationApiService.GetBusLocationsAsync();
+                var busLocations = await _busLocationApiService.GetBusLocationsAsync(requestbody);
 
                 if (busLocations != null)
                 {
