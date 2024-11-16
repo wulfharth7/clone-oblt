@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Typography, Autocomplete, IconButton } from '@mui/material';
 import { SwapHoriz, LocationOn } from '@mui/icons-material';
 
 const SearchModule = () => {
-  const [input1, setInput1] = useState('');
-  const [input2, setInput2] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
+  const [value1, setValue1] = useState(null);
+  const [inputValue1, setInputValue1] = useState('');
+  const [suggestions1, setSuggestions1] = useState([]);
+
+  const [value2, setValue2] = useState(null);
+  const [inputValue2, setInputValue2] = useState('');
+  const [suggestions2, setSuggestions2] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const createSession = async () => {
@@ -83,12 +88,17 @@ const SearchModule = () => {
 
   const loadInitialData = async () => {
     try {
-      const data = await fetchBusLocations(null); // Use null for initial request
+      const data = await fetchBusLocations(null);
       if (data.length > 0) {
-        const limitedSuggestions = data.slice(0, 10); // Limit initial suggestions to 10
-        setSuggestions(limitedSuggestions);
-        setInput1(limitedSuggestions[0]?.name || ''); // Prepopulate input1
-        setInput2(limitedSuggestions[0]?.name || ''); // Prepopulate input2
+        const limitedSuggestions = data.slice(0, 10);
+        setSuggestions1(limitedSuggestions);
+        setSuggestions2(limitedSuggestions);
+
+        setValue1(limitedSuggestions[0]);
+        setInputValue1(limitedSuggestions[0]?.name || '');
+
+        setValue2(limitedSuggestions[1]); // Default to a different option
+        setInputValue2(limitedSuggestions[1]?.name || '');
       }
       setLoading(false);
     } catch (error) {
@@ -97,27 +107,48 @@ const SearchModule = () => {
     }
   };
 
-  const handleInputChange = async (event, newValue, setInput, setSuggestions) => {
-    setInput(newValue || '');
-    if (newValue) {
+  const handleInputChange = async (
+    event,
+    newInputValue,
+    setInputValue,
+    setSuggestions,
+    reason
+  ) => {
+    setInputValue(newInputValue || ''); // Update the input value
+    if (reason === 'clear' || newInputValue === '') {
+      setSuggestions([]); // Clear suggestions if input is cleared
+      return;
+    }
+    if (reason === 'input') {
       try {
-        const data = await fetchBusLocations(newValue);
-        setSuggestions(data.slice(0, 10)); // Limit dynamic suggestions to 10
+        const data = await fetchBusLocations(newInputValue);
+        setSuggestions(data.slice(0, 10));
       } catch (error) {
         console.error('Error fetching suggestions:', error);
       }
-    } else {
-      setSuggestions([]);
     }
   };
 
-  const handleValueChange = (event, newValue, setInput) => {
-    setInput(newValue || '');
+  const handleValueChange = (event, newValue, setValue, otherValue) => {
+    if (newValue && newValue.name === otherValue?.name) {
+      alert('The selected locations cannot be the same.');
+      return; // Ignore the change
+    }
+    setValue(newValue); // Update the selected value
   };
 
   const handleSwap = () => {
-    setInput1(input2);
-    setInput2(input1);
+    const tempValue = value1;
+    const tempInputValue = inputValue1;
+    const tempSuggestions = suggestions1;
+
+    setValue1(value2);
+    setInputValue1(inputValue2);
+    setSuggestions1(suggestions2);
+
+    setValue2(tempValue);
+    setInputValue2(tempInputValue);
+    setSuggestions2(tempSuggestions);
   };
 
   useEffect(() => {
@@ -163,15 +194,21 @@ const SearchModule = () => {
         <Box width="100%">
           <Box display="flex" alignItems="center" gap={1}>
             <LocationOn color="primary" />
-            <Typography variant="subtitle1" color="red" fontWeight="bold">From</Typography>
+            <Typography variant="subtitle1" color="red" fontWeight="bold">
+              From
+            </Typography>
           </Box>
           <Autocomplete
-            value={input1}
-            onInputChange={(event, newValue) =>
-              handleInputChange(event, newValue, setInput1, setSuggestions)
+            value={value1}
+            inputValue={inputValue1}
+            onInputChange={(event, newInputValue, reason) =>
+              handleInputChange(event, newInputValue, setInputValue1, setSuggestions1, reason)
             }
-            onChange={(event, newValue) => handleValueChange(event, newValue, setInput1)}
-            options={suggestions.map((suggestion) => suggestion.name)}
+            onChange={(event, newValue) =>
+              handleValueChange(event, newValue, setValue1, value2)
+            }
+            options={suggestions1}
+            getOptionLabel={(option) => option.name || ''}
             renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
             freeSolo
           />
@@ -184,15 +221,21 @@ const SearchModule = () => {
         <Box width="100%">
           <Box display="flex" alignItems="center" gap={1}>
             <LocationOn color="primary" />
-            <Typography variant="subtitle1" color="red" fontWeight="bold">To</Typography>
+            <Typography variant="subtitle1" color="red" fontWeight="bold">
+              To
+            </Typography>
           </Box>
           <Autocomplete
-            value={input2}
-            onInputChange={(event, newValue) =>
-              handleInputChange(event, newValue, setInput2, setSuggestions)
+            value={value2}
+            inputValue={inputValue2}
+            onInputChange={(event, newInputValue, reason) =>
+              handleInputChange(event, newInputValue, setInputValue2, setSuggestions2, reason)
             }
-            onChange={(event, newValue) => handleValueChange(event, newValue, setInput2)}
-            options={suggestions.map((suggestion) => suggestion.name)}
+            onChange={(event, newValue) =>
+              handleValueChange(event, newValue, setValue2, value1)
+            }
+            options={suggestions2}
+            getOptionLabel={(option) => option.name || ''}
             renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
             freeSolo
           />
