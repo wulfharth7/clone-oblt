@@ -3,40 +3,39 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
+//Singleton classes should be sealed all the time to prevent being inherited.
+//Source https://refactoring.guru/design-patterns/singleton/csharp/example#example-0
+
+
 namespace clone_oblt.Utils
 {
-    //Singleton classes should be sealed all the time to prevent being inherited. Source https://refactoring.guru/design-patterns/singleton/csharp/example#example-0
     public sealed class SingletonApiKey
     {
-        //Lazy checks if an instance exists of the class or not. If its not, it get created. Works very well with Singleton Objects tbh.
+        //Lazy initialization checks if an instance exists of the class or not. If its not, it get created. Works very well with Singleton Objects.
         private static readonly Lazy<SingletonApiKey> _instance = new Lazy<SingletonApiKey>(() => new SingletonApiKey());
         public string ApiKey { get; private set; }
-        // Path to the API key configuration file on the desktop
-        private readonly string _desktopConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ApiKey.json");
+        private readonly string _desktopConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ApiKey.json"); // Path to the API key configuration file on the desktop
+        //I'm aware that this is not the best approach to a basic api key, I just wanted to do some extra work here and also not leak the api key accidentally or smth.
 
-        //Constructor
         private SingletonApiKey()
         {
             LoadApiKey();
         }
 
-        //Function for getting the singleton object
         public static SingletonApiKey GetInstance()
         {
             return _instance.Value;
         }
 
-        //Method to load the API key from the file and set the ApiKey property
         private void LoadApiKey()
         {
             if (!File.Exists(_desktopConfigPath))
             {
-                throw new FileNotFoundException("API configuration file not found on the desktop.");
+                throw new FileNotFoundException("error, no apikey config.");
             }
             var config = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(_desktopConfigPath)
             );
             
-            //checks if the json key exists or not.
             if (config.ContainsKey("ObiletApiKey"))
             {
                 ApiKey = config["ObiletApiKey"];
@@ -48,3 +47,5 @@ namespace clone_oblt.Utils
         }
     }
 }
+
+//this will be thread safe later in order to be scaleable.

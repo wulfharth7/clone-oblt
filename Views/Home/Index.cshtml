@@ -1,11 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "Debug API Key";
+    ViewData["Title"] = "Home Page";
 }
 
-<h2>API Key Debug</h2>
-<p>
-    The API Key :
-</p>
-<pre style="background-color: #f4f4f4; padding: 10px; border-radius: 5px;">
-    @ViewBag.ApiKey
-</pre>
+<h2>@ViewData["Title"]</h2>
+
+<!-- This will be used to display session status -->
+<div id="session-status"></div>
+
+<script>
+    window.onload = function () {
+        fetch('/api/Session/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                console.log("Response Status:", response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log("Response Data:", data);
+
+                if (data.status === "Success" && data.data) {
+                    document.getElementById('session-status').innerHTML =
+                        `Session created successfully!<br>Session ID: ${data.data["session-id"]}<br>Device ID: ${data.data["device-id"]}`;
+                } else {
+                    document.getElementById('session-status').innerHTML =
+                        'Failed to create session.';
+                }
+            })
+            .catch(error => {
+                console.error("Error occurred:", error);
+                document.getElementById('session-status').innerHTML =
+                    `Error occurred: ${error.message}`;
+            });
+    };
+</script>

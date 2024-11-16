@@ -1,8 +1,13 @@
+using clone_oblt.Services;
+using clone_oblt.Utils;
+using static clone_oblt.Services.IObiletApiService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddSingleton(SingletonApiKey.GetInstance());
+builder.Services.AddHttpClient<IObiletApiService, ObiletApiService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
