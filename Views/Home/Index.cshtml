@@ -11,6 +11,10 @@
 <h3>Bus Locations:</h3>
 <div id="bus-locations"></div>
 
+<!-- Display journeys -->
+<h3>Journeys:</h3>
+<div id="journeys"></div>
+
 <script>
     window.onload = function () {
         // First, create the session
@@ -32,6 +36,7 @@
                     document.getElementById('session-status').innerHTML =
                         `Session created successfully!<br>Session ID: ${data.data["session-id"]}<br>Device ID: ${data.data["device-id"]}`;
 
+                    // Fetch bus locations
                     fetch('/api/buslocation/getbuslocations', {
                         method: 'POST',
                     })
@@ -39,11 +44,11 @@
                         .then(data => {
                             if (data && data.data) {
                                 const busLocationsContainer = document.getElementById('bus-locations');
-                                busLocationsContainer.innerHTML = ''; 
+                                busLocationsContainer.innerHTML = '';
 
                                 data.data.forEach(location => {
-                                    const longName = location['name']; 
-                                    console.log(longName); 
+                                    const longName = location['name'];
+                                    console.log(longName);
                                     const busLocationDiv = document.createElement('div');
                                     busLocationDiv.textContent = longName || "No name available";
                                     busLocationsContainer.appendChild(busLocationDiv);
@@ -55,6 +60,37 @@
                         .catch(error => {
                             console.error('Error fetching bus locations:', error);
                         });
+
+                    const payload = {
+                        
+                    };
+
+                    fetch('/api/journeys/getjourneys', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.data) {
+                                const journeysContainer = document.getElementById('journeys');
+                                journeysContainer.innerHTML = '';
+
+                                data.data.forEach(journey => {
+                                    const journeyDiv = document.createElement('div');
+                                    journeyDiv.textContent = `Journey from ${journey.OriginId} to ${journey.DestinationId}, Departure: ${journey.DepartureDate}`;
+                                    journeysContainer.appendChild(journeyDiv);
+                                });
+                            } else {
+                                console.error('No journeys found');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching journeys:', error);
+                        });
+                        
                 } else {
                     document.getElementById('session-status').innerHTML = 'Failed to create session.';
                 }

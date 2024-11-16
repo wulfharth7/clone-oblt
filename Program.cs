@@ -11,6 +11,7 @@ builder.Services.AddSingleton(SingletonApiKey.GetInstance());
 builder.Services.AddHttpClient<IObiletApiService, ObiletApiService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IBusLocationApiService, BusLocationApiService>();
+builder.Services.AddScoped<IJourneysApiService, JourneysApiService>();
 builder.Services.AddSession(options =>
 {
     options.Cookie.Name = ".Clone.Session";  
