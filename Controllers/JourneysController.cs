@@ -19,9 +19,6 @@ namespace clone_oblt.Controllers
         [HttpPost("getjourneys")]
         public async Task<IActionResult> GetJourneys([FromBody] JourneyRequest journeyRequest)
         {
-            if (journeyRequest == null) // Ensure request is not null
-                journeyRequest = new JourneyRequest();
-
             try
             {
                 var journeys = await _journeysApiService.GetJourneysAsync(journeyRequest);

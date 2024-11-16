@@ -25,17 +25,16 @@ namespace clone_oblt.Services
             _apiKey = SingletonApiKey.GetInstance().ApiKey;
             _httpContextAccessor = httpContextAccessor;
         }
-
-        public async Task<JourneyData> GetJourneysAsync(JourneyRequest journeyRequest)
+        //  TODO
+        //  project requirements about default settings will be done later.
+        public async Task<List<JourneyDetails>> GetJourneysAsync(JourneyRequest journeyRequest)
         {
-            // Set default values if not provided in the request body
-            var originId = journeyRequest.Data?.OriginId ?? 349;
+            var originId = journeyRequest.Data?.OriginId ?? 349; 
             var destinationId = journeyRequest.Data?.DestinationId ?? 356;
             var departureDate = journeyRequest.Data?.DepartureDate ?? new DateTime(2024, 12, 1);
-            var date = journeyRequest.Date != DateTime.MinValue ? journeyRequest.Date : DateTime.UtcNow.AddDays(1);
+            var date = departureDate;
             var language = journeyRequest.Language ?? "tr-TR";
 
-            // Get session and device ID from headers
             var sessionId = _httpContextAccessor.HttpContext.Session.GetString("session-id");
             var deviceId = _httpContextAccessor.HttpContext.Session.GetString("device-id");
 
@@ -44,7 +43,6 @@ namespace clone_oblt.Services
                 throw new InvalidOperationException("Session ID or Device ID is missing.");
             }
 
-            // Prepare the request with formatted dates
             var request = new JourneyRequest
             {
                 DeviceSession = new DeviceSession
@@ -62,14 +60,12 @@ namespace clone_oblt.Services
                 }
             };
 
-            // Serialize to JSON with date formatting
             var jsonSettings = new JsonSerializerSettings
             {
                 DateFormatString = "yyyy-MM-dd"
             };
             var jsonContent = new StringContent(JsonConvert.SerializeObject(request, jsonSettings), Encoding.UTF8, "application/json");
 
-            // Log serialized JSON
             var serializedContent = await jsonContent.ReadAsStringAsync();
             Console.WriteLine("[Serialized Request]: " + serializedContent);
 
@@ -78,7 +74,6 @@ namespace clone_oblt.Services
                 Content = jsonContent
             };
 
-            // Dynamically add headers
             AddHeadersToRequest(requestMessage);
 
             try
@@ -86,8 +81,6 @@ namespace clone_oblt.Services
                 var response = await _httpClient.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
                 var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("[Response]: " + responseContent);
-
                 var journeysResponse = JsonConvert.DeserializeObject<JourneyResponse>(responseContent);
                 return journeysResponse?.Data;
             }
@@ -124,11 +117,6 @@ namespace clone_oblt.Services
                 headerDictionary.Add(property.Name, property.GetValue(headers)?.ToString());
             }
             return headerDictionary;
-        }
-
-        private void SetDefaultHeadersIfEmpty()
-        {
-
         }
     }
 }

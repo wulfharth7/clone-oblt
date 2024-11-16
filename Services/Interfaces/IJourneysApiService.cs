@@ -5,6 +5,6 @@ namespace clone_oblt.Services.Interfaces
 {
     public interface IJourneysApiService
     {
-        Task<JourneyData> GetJourneysAsync(JourneyRequest journeyRequest);
+        Task<List<JourneyDetails>> GetJourneysAsync(JourneyRequest journeyRequest);
     }
 }
