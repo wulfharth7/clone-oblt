@@ -1,5 +1,5 @@
 ﻿using clone_oblt.Models;
-using clone_oblt.Services;
+using clone_oblt.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -27,12 +27,10 @@ namespace clone_oblt.Controllers
                     Type = 1,
                     Connection = new Models.ConnectionInfo
                     {
-                        IpAddress = "165.114.41.21", // this will be changed and be dynamic in the future
-                                                     // at the beginning my first aim was to make the session creation work so I can implement
-                                                     // other api endpoints
+                        IpAddress = "165.114.41.21", // this will be dynamic in the future
                         Port = "5117"
                     },
-                    Browser = new BrowserInfo       // these also will be refactored and be dynamic
+                    Browser = new BrowserInfo       // these also will be dynamic
                     {
                         Name = "Chrome",
                         Version = "47.0.0.12"
@@ -40,10 +38,12 @@ namespace clone_oblt.Controllers
                 };
 
                 var response = await _apiService.PostAsync<CreateSessionResponse>(request);
-                Console.WriteLine($"Response from API Service: {JsonSerializer.Serialize(response)}");
 
                 if (response != null && response.Status == "Success" && response.Data != null)
                 {
+                    HttpContext.Session.SetString("session-id", response.Data.SessionId);
+                    HttpContext.Session.SetString("device-id", response.Data.DeviceId);
+
                     return Ok(new
                     {
                         status = "Success",
@@ -61,8 +61,6 @@ namespace clone_oblt.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred while creating session: {ex.Message}");
-
                 return StatusCode(500, new
                 {
                     status = "Error",

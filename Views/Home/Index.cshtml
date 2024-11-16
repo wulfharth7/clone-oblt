@@ -4,11 +4,16 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<!-- This will be used to display session status -->
+<!-- Display session creation status -->
 <div id="session-status"></div>
+
+<!-- Display bus locations -->
+<h3>Bus Locations:</h3>
+<div id="bus-locations"></div>
 
 <script>
     window.onload = function () {
+        // First, create the session
         fetch('/api/Session/create', {
             method: 'POST',
             headers: {
@@ -20,18 +25,42 @@
                 return response.json();
             })
             .then(data => {
-                console.log("Response Data:", data);
+                console.log("Session Creation Data:", data);
 
                 if (data.status === "Success" && data.data) {
+                    // Display session info
                     document.getElementById('session-status').innerHTML =
                         `Session created successfully!<br>Session ID: ${data.data["session-id"]}<br>Device ID: ${data.data["device-id"]}`;
+
+                    fetch('/api/buslocation/getbuslocations', {
+                        method: 'POST',
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.data) {
+                                const busLocationsContainer = document.getElementById('bus-locations');
+                                busLocationsContainer.innerHTML = ''; 
+
+                                data.data.forEach(location => {
+                                    const longName = location['name']; 
+                                    console.log(longName); 
+                                    const busLocationDiv = document.createElement('div');
+                                    busLocationDiv.textContent = longName || "No name available";
+                                    busLocationsContainer.appendChild(busLocationDiv);
+                                });
+                            } else {
+                                console.error('No bus locations found');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching bus locations:', error);
+                        });
                 } else {
-                    document.getElementById('session-status').innerHTML =
-                        'Failed to create session.';
+                    document.getElementById('session-status').innerHTML = 'Failed to create session.';
                 }
             })
             .catch(error => {
-                console.error("Error occurred:", error);
+                console.error("Error occurred while creating session:", error);
                 document.getElementById('session-status').innerHTML =
                     `Error occurred: ${error.message}`;
             });

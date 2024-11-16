@@ -1,6 +1,7 @@
 using clone_oblt.Services;
+using clone_oblt.Services.Interfaces;
 using clone_oblt.Utils;
-using static clone_oblt.Services.IObiletApiService;
+using static clone_oblt.Services.Interfaces.IObiletApiService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton(SingletonApiKey.GetInstance());
 builder.Services.AddHttpClient<IObiletApiService, ObiletApiService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IBusLocationApiService, BusLocationApiService>();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".Clone.Session";  
+    options.IdleTimeout = TimeSpan.FromMinutes(30); 
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true; 
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,6 +31,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseSession();
 
 app.UseRouting();
 

@@ -1,4 +1,4 @@
-﻿namespace clone_oblt.Services
+﻿namespace clone_oblt.Services.Interfaces
 {
     public interface IObiletApiService
     {

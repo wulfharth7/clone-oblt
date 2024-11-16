@@ -1,4 +1,5 @@
-﻿using clone_oblt.Utils;
+﻿using clone_oblt.Services.Interfaces;
+using clone_oblt.Utils;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text;
@@ -28,7 +29,7 @@ namespace clone_oblt.Services
                 Content = jsonContent
             };
 
-            AddHeadersToRequest(requestMessage);
+            AddHeadersAndUrlToRequest(requestMessage);
 
             try
             {
@@ -44,7 +45,7 @@ namespace clone_oblt.Services
             }
         }
 
-        private void AddHeadersToRequest(HttpRequestMessage requestMessage)
+        private void AddHeadersAndUrlToRequest(HttpRequestMessage requestMessage)
         {
             var headers = new
             {
