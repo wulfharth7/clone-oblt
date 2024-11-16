@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace clone_oblt.Models
 {
+    //todo api-request-id etc.
+    //check docs again, skipped some response fields.
     public class JourneyRequest
     {
         [JsonProperty("device-session")]

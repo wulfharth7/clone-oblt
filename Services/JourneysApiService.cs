@@ -81,8 +81,7 @@ namespace clone_oblt.Services
                 var response = await _httpClient.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var journeysResponse = JsonConvert.DeserializeObject<JourneyResponse>(responseContent);
-                return journeysResponse?.Data;
+                return SortJourneysByDepartureDateAndTime(JsonConvert.DeserializeObject<JourneyResponse>(responseContent));
             }
             catch (HttpRequestException ex)
             {
@@ -90,7 +89,30 @@ namespace clone_oblt.Services
             }
         }
 
+        private List<JourneyDetails> SortJourneysByDepartureDateAndTime(JourneyResponse journeysResponse)
+        {
+            if (journeysResponse?.Data == null)
+            {
+                return new List<JourneyDetails>(); 
+            }
 
+            foreach (var journey in journeysResponse.Data)
+            {
+                if (journey?.Journey?.Stops != null)
+                {
+                    journey.Journey.Stops = journey.Journey.Stops
+                        .Where(stop => stop?.Time.HasValue == true) 
+                        .OrderBy(stop => stop.Time)
+                        .ToList();
+                }
+            }
+
+            return journeysResponse.Data
+                .Where(journey => journey?.Journey?.Departure.HasValue == true) 
+                .OrderBy(journey => journey.Journey.Departure)  
+                .ThenBy(journey => journey.Journey.Stops.FirstOrDefault()?.Time) 
+                .ToList();
+        }
         private void AddHeadersToRequest(HttpRequestMessage requestMessage)
         {
             var headers = new
