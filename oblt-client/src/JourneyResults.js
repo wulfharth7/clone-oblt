@@ -103,6 +103,7 @@ const JourneyResults = () => {
     }
   };
 
+  // useEffect to initialize session and fetch journeys
   useEffect(() => {
     const initialize = async () => {
       const sessionId = sessionStorage.getItem('session-id');
@@ -141,6 +142,7 @@ const JourneyResults = () => {
     );
   }
 
+  // Format the departure date and day
   const formattedDate = format(new Date(departureDate), 'do MMMM, EEEE', {
     locale: trLocale,
   });
@@ -166,6 +168,8 @@ const JourneyResults = () => {
             {journeys.map((journeyItem, index) => {
               const {
                 partnerName,
+                partnerId,
+                features,
                 journey: {
                   stops,
                   origin: journeyOrigin,
@@ -173,7 +177,8 @@ const JourneyResults = () => {
                 },
               } = journeyItem;
 
-              // Find origin and destination stops
+              const logoUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/partner/${partnerId}-sm.png`;
+
               const originStop = stops.find((stop) => stop.isOrigin);
               const destinationStop = stops.find(
                 (stop) => stop.isDestination
@@ -186,19 +191,73 @@ const JourneyResults = () => {
                 ? format(new Date(destinationStop.time), 'HH:mm')
                 : 'N/A';
 
+              const featureIcons = features.map((feature) => {
+                const featureIconUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/feature/${feature.id}.svg`;
+                return (
+                  <img
+                    key={feature.id}
+                    src={featureIconUrl}
+                    alt={feature.name}
+                    title={feature.name}
+                    style={{ height: '24px', margin: '0 5px' }}
+                  />
+                );
+              });
+
               return (
                 <ListItem key={index}>
                   <Card variant="outlined" sx={{ width: '100%' }}>
                     <CardContent>
-                      <Typography variant="h6" component="div">
-                        {departureTime} → {arrivalTime}
-                      </Typography>
-                      <Typography variant="body1" color="textSecondary">
-                        {journeyOrigin} - {journeyDestination}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Operator: {partnerName}
-                      </Typography>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        mb={2}
+                      >
+                        <img
+                          src={logoUrl}
+                          alt={`${partnerName} logo`}
+                          style={{ height: '60px' }}
+                        />
+                      </Box>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        mb={1}
+                      >
+                        <Typography variant="h6" component="div">
+                          {departureTime} → {arrivalTime}
+                        </Typography>
+                      </Box>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        mb={2}
+                      >
+                        <Typography variant="body1" color="textSecondary">
+                          {journeyOrigin} - {journeyDestination}
+                        </Typography>
+                      </Box>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        mb={2}
+                      >
+                        <Typography variant="body2" color="textSecondary">
+                          {partnerName}
+                        </Typography>
+                      </Box>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        mt={2}
+                      >
+                        {featureIcons}
+                      </Box>
                     </CardContent>
                   </Card>
                 </ListItem>
