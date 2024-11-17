@@ -1,4 +1,9 @@
-﻿using clone_oblt.Services;
+﻿using clone_oblt.Builders.Interfaces;
+using clone_oblt.Builders;
+using clone_oblt.Helpers;
+using clone_oblt.Helpers.HelperInterfaces;
+using clone_oblt.Models;
+using clone_oblt.Services;
 using clone_oblt.Services.Interfaces;
 using clone_oblt.Utils;
 
@@ -20,10 +25,15 @@ namespace clone_oblt
             services.AddControllers();
             services.AddDistributedMemoryCache();
             services.AddSingleton(SingletonApiKey.GetInstance());
-            services.AddHttpClient<IObiletApiService, ObiletApiService>();
+            services.AddHttpClient<ISessionApiService, SessionApiService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IBusLocationApiService, BusLocationApiService>();
             services.AddScoped<IJourneysApiService, JourneysApiService>();
+            services.AddScoped<ISessionHelperService, SessionHelperService>();
+            services.AddScoped<IRequestBuilder<CreateSessionResponse>, CreateSessionResponseBuilder>();
+            services.AddScoped<IRequestBuilder<JourneyRequest>, JourneyRequestBuilder>();
+            services.AddScoped<IRequestBuilder<BusLocationRequest>, BusLocationRequestBuilder>();
+
             CreateSession(services);
             
         }

@@ -1,4 +1,6 @@
-﻿using clone_oblt.Models;
+﻿using clone_oblt.Builders;
+using clone_oblt.Helpers.HelperInterfaces;
+using clone_oblt.Models;
 using clone_oblt.Services.Interfaces;
 using clone_oblt.Utils;
 using Microsoft.AspNetCore.Http;
@@ -16,58 +18,32 @@ namespace clone_oblt.Services
         private readonly HttpClient _httpClient;
         private readonly string _journeysApiUrl;
         private readonly string _apiKey;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISessionHelperService _sessionHelperService;
 
-        public JourneysApiService(HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public JourneysApiService(HttpClient httpClient, IConfiguration configuration, ISessionHelperService sessionHelperService)
         {
             _httpClient = httpClient;
             _journeysApiUrl = configuration["ApiSettings:JourneysApiUrl"];
             _apiKey = SingletonApiKey.GetInstance().ApiKey;
-            _httpContextAccessor = httpContextAccessor;
+            _sessionHelperService = sessionHelperService;
         }
-        //  TODO
-        //  project requirements about default settings will be done later.
+
         public async Task<List<JourneyDetails>> GetJourneysAsync(JourneyRequest journeyRequest)
         {
-            var originId = journeyRequest.Data?.OriginId ?? 349; 
-            var destinationId = journeyRequest.Data?.DestinationId ?? 356;
-            var departureDate = journeyRequest.Data?.DepartureDate ?? new DateTime(2024, 12, 1);
-            var date = departureDate;
-            var language = journeyRequest.Language ?? "tr-TR";
+            var (sessionId, deviceId) = _sessionHelperService.GetSessionInfo();
 
-            var sessionId = _httpContextAccessor.HttpContext.Session.GetString("session-id");
-            var deviceId = _httpContextAccessor.HttpContext.Session.GetString("device-id");
-
-            if (string.IsNullOrEmpty(sessionId) || string.IsNullOrEmpty(deviceId))
-            {
-                throw new InvalidOperationException("Session ID or Device ID is missing.");
-            }
-
-            var request = new JourneyRequest
-            {
-                DeviceSession = new DeviceSession
-                {
-                    SessionId = sessionId,
-                    DeviceId = deviceId
-                },
-                Date = date,
-                Language = language,
-                Data = new JourneyData
-                {
-                    OriginId = originId,
-                    DestinationId = destinationId,
-                    DepartureDate = departureDate
-                }
-            };
+            var request = new JourneyRequestBuilder()
+                .WithDeviceSession(sessionId, deviceId)
+                .WithLanguage(journeyRequest.Language ?? "tr-TR")
+                .WithDate(journeyRequest.Data.DepartureDate)
+                .WithJourneyData(journeyRequest.Data.OriginId, journeyRequest.Data.DestinationId, journeyRequest.Data.DepartureDate)
+                .Build();
 
             var jsonSettings = new JsonSerializerSettings
             {
                 DateFormatString = "yyyy-MM-dd"
             };
             var jsonContent = new StringContent(JsonConvert.SerializeObject(request, jsonSettings), Encoding.UTF8, "application/json");
-
-            var serializedContent = await jsonContent.ReadAsStringAsync();
-            Console.WriteLine("[Serialized Request]: " + serializedContent);
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, _journeysApiUrl)
             {
@@ -93,7 +69,7 @@ namespace clone_oblt.Services
         {
             if (journeysResponse?.Data == null)
             {
-                return new List<JourneyDetails>(); 
+                return new List<JourneyDetails>();
             }
 
             foreach (var journey in journeysResponse.Data)
@@ -101,18 +77,19 @@ namespace clone_oblt.Services
                 if (journey?.Journey?.Stops != null)
                 {
                     journey.Journey.Stops = journey.Journey.Stops
-                        .Where(stop => stop?.Time.HasValue == true) 
+                        .Where(stop => stop?.Time.HasValue == true)
                         .OrderBy(stop => stop.Time)
                         .ToList();
                 }
             }
 
             return journeysResponse.Data
-                .Where(journey => journey?.Journey?.Departure.HasValue == true) 
-                .OrderBy(journey => journey.Journey.Departure)  
-                .ThenBy(journey => journey.Journey.Stops.FirstOrDefault()?.Time) 
+                .Where(journey => journey?.Journey?.Departure.HasValue == true)
+                .OrderBy(journey => journey.Journey.Departure)
+                .ThenBy(journey => journey.Journey.Stops.FirstOrDefault()?.Time)
                 .ToList();
         }
+
         private void AddHeadersToRequest(HttpRequestMessage requestMessage)
         {
             var headers = new

@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace clone_oblt.Services
 {
-    public class ObiletApiService : IObiletApiService
+    public class SessionApiService : Interfaces.ISessionApiService
     {
         private readonly HttpClient _httpClient;
         private readonly string _sessionApiUrl;
         private readonly string _apiKey;
 
-        public ObiletApiService(HttpClient httpClient, IConfiguration configuration)
+        public SessionApiService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _sessionApiUrl = configuration["ApiSettings:SessionApiUrl"]; // OBilet Session Creation Api is stored here.

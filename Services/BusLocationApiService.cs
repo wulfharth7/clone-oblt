@@ -1,4 +1,6 @@
-﻿using clone_oblt.Models;
+﻿using clone_oblt.Builders;
+using clone_oblt.Helpers.HelperInterfaces;
+using clone_oblt.Models;
 using clone_oblt.Services.Interfaces;
 using clone_oblt.Utils;
 using Microsoft.AspNetCore.Http;
@@ -18,37 +20,25 @@ namespace clone_oblt.Services
         private readonly HttpClient _httpClient;
         private readonly string _busLocationApiUrl;
         private readonly string _apiKey;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISessionHelperService _sessionHelperService;
 
-        public BusLocationApiService(HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public BusLocationApiService(HttpClient httpClient, IConfiguration configuration, ISessionHelperService sessionHelperService)
         {
             _httpClient = httpClient;
             _busLocationApiUrl = configuration["ApiSettings:BusLocationsApiUrl"];
             _apiKey = SingletonApiKey.GetInstance().ApiKey;
-            _httpContextAccessor = httpContextAccessor;
+            _sessionHelperService = sessionHelperService;
         }
 
         public async Task<List<BusLocationData>> GetBusLocationsAsync(BusLocationRequest requestbody)
         {
-            var sessionId = _httpContextAccessor.HttpContext.Session.GetString("session-id");
-            var deviceId = _httpContextAccessor.HttpContext.Session.GetString("device-id");
-            
-            Console.WriteLine($"ADŞLKFSAŞLFASLKFASF Session ID: {sessionId}, Device ID: {deviceId}");
-            if (string.IsNullOrEmpty(sessionId) || string.IsNullOrEmpty(deviceId))
-            {
-                throw new InvalidOperationException("Session ID or Device ID is missing.");
-            }
-            var request = new BusLocationRequest
-            {
-                Data = requestbody.Data,                   
-                DeviceSession = new DeviceSession
-                {
-                    SessionId = sessionId,
-                    DeviceId = deviceId
-                },
-                Date = DateTime.Now,
-                Language = "tr-TR"
-            };
+            var (sessionId, deviceId) = _sessionHelperService.GetSessionInfo();
+            var request = new BusLocationRequestBuilder()
+                .WithBusLocationData(requestbody.Data)
+                .WithDeviceSession(sessionId, deviceId)
+                .WithDate(DateTime.Now)
+                .WithLanguage("tr-TR")
+                .Build();
 
             var jsonContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
