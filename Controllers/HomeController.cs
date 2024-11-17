@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.IO;
 
 namespace clone_oblt.Controllers
 {
@@ -8,7 +9,7 @@ namespace clone_oblt.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(); // This renders your frontend view
+            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "index.html"), "text/html");
         }
     }
 }
