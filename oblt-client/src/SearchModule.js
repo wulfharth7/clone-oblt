@@ -11,6 +11,12 @@ const SearchModule = () => {
   const [inputValue2, setInputValue2] = useState('');
   const [suggestions2, setSuggestions2] = useState([]);
 
+  const [departureDate, setDepartureDate] = useState(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  });
+
   const [loading, setLoading] = useState(true);
 
   const createSession = async () => {
@@ -240,6 +246,21 @@ const SearchModule = () => {
             freeSolo
           />
         </Box>
+      </Box>
+
+      {/* Date Picker */}
+      <Box width="100%" marginTop={2}>
+        <TextField
+          label="Departure Date"
+          type="date"
+          fullWidth
+          variant="outlined"
+          value={departureDate}
+          onChange={(e) => setDepartureDate(e.target.value)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
       </Box>
 
       <Box display="flex" justifyContent="flex-end" marginTop={2}>
