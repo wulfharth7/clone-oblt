@@ -11,6 +11,19 @@ import { SwapHoriz, LocationOn } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 const SearchModule = () => {
+  const navigate = useNavigate();
+
+  // Calculate today's and tomorrow's dates
+  const todayDate = new Date();
+  const today = todayDate.toISOString().split('T')[0];
+
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrow = tomorrowDate.toISOString().split('T')[0];
+
+  // Initialize state
+  const [departureDate, setDepartureDate] = useState(tomorrow);
+
   const [value1, setValue1] = useState(null);
   const [inputValue1, setInputValue1] = useState('');
   const [suggestions1, setSuggestions1] = useState([]);
@@ -19,15 +32,7 @@ const SearchModule = () => {
   const [inputValue2, setInputValue2] = useState('');
   const [suggestions2, setSuggestions2] = useState([]);
 
-  const [departureDate, setDepartureDate] = useState(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-  });
-
   const [loading, setLoading] = useState(true);
-
-  const navigate = useNavigate();
 
   const createSession = async () => {
     try {
@@ -297,7 +302,6 @@ const SearchModule = () => {
         </Box>
       </Box>
 
-      {/* Date Picker */}
       <Box width="100%" marginTop={2}>
         <TextField
           label="Departure Date"
@@ -309,7 +313,27 @@ const SearchModule = () => {
           InputLabelProps={{
             shrink: true,
           }}
+          inputProps={{
+            min: today, // Set minimum date to today
+          }}
         />
+        //buttons for today and tomorrow
+        <Box display="flex" justifyContent="flex-start" marginTop={1} gap={1}>
+          <Button
+            variant={departureDate === today ? 'contained' : 'outlined'}
+            onClick={() => setDepartureDate(today)}
+            size="small" // Adjusted size
+          >
+            Today
+          </Button>
+          <Button
+            variant={departureDate === tomorrow ? 'contained' : 'outlined'}
+            onClick={() => setDepartureDate(tomorrow)}
+            size="small" // Adjusted size
+          >
+            Tomorrow
+          </Button>
+        </Box>
       </Box>
 
       <Box display="flex" justifyContent="flex-end" marginTop={2}>

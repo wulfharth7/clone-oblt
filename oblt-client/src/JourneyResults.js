@@ -153,11 +153,11 @@ const JourneyResults = () => {
         Back
       </Button>
       {/* Title at the top */}
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         {origin.name} - {destination.name}
       </Typography>
       {/* Date and day */}
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="subtitle1" gutterBottom>
         {formattedDate}
       </Typography>
       {journeys.length === 0 ? (
@@ -177,8 +177,10 @@ const JourneyResults = () => {
                 },
               } = journeyItem;
 
+              // Construct the logo URL
               const logoUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/partner/${partnerId}-sm.png`;
 
+              // Find origin and destination stops
               const originStop = stops.find((stop) => stop.isOrigin);
               const destinationStop = stops.find(
                 (stop) => stop.isDestination
@@ -191,6 +193,7 @@ const JourneyResults = () => {
                 ? format(new Date(destinationStop.time), 'HH:mm')
                 : 'N/A';
 
+              // Construct feature icons
               const featureIcons = features.map((feature) => {
                 const featureIconUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/feature/${feature.id}.svg`;
                 return (
@@ -199,7 +202,7 @@ const JourneyResults = () => {
                     src={featureIconUrl}
                     alt={feature.name}
                     title={feature.name}
-                    style={{ height: '24px', margin: '0 5px' }}
+                    style={{ height: '20px', margin: '0 4px' }}
                   />
                 );
               });
@@ -208,53 +211,58 @@ const JourneyResults = () => {
                 <ListItem key={index}>
                   <Card variant="outlined" sx={{ width: '100%' }}>
                     <CardContent>
-                      <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        mb={2}
-                      >
-                        <img
-                          src={logoUrl}
-                          alt={`${partnerName} logo`}
-                          style={{ height: '60px' }}
-                        />
-                      </Box>
+                      {/* Bus Firm Logo */}
                       <Box
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
                         mb={1}
                       >
-                        <Typography variant="h6" component="div">
+                        <img
+                          src={logoUrl}
+                          alt={`${partnerName} logo`}
+                          style={{ height: '50px' }}
+                        />
+                      </Box>
+                      {/* Departure and Arrival Times */}
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        mb={1}
+                      >
+                        <Typography variant="subtitle1" component="div">
                           {departureTime} → {arrivalTime}
                         </Typography>
                       </Box>
+                      {/* Origin and Destination */}
                       <Box
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        mb={2}
+                        mb={1}
                       >
-                        <Typography variant="body1" color="textSecondary">
+                        <Typography variant="body2" color="textSecondary">
                           {journeyOrigin} - {journeyDestination}
                         </Typography>
                       </Box>
+                      {/* Operator Name */}
                       <Box
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        mb={2}
+                        mb={1}
                       >
-                        <Typography variant="body2" color="textSecondary">
+                        <Typography variant="caption" color="textSecondary">
                           {partnerName}
                         </Typography>
                       </Box>
+                      {/* Feature Icons */}
                       <Box
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        mt={2}
+                        mt={1}
                       >
                         {featureIcons}
                       </Box>
