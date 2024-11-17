@@ -3,13 +3,8 @@ using clone_oblt.Helpers.HelperInterfaces;
 using clone_oblt.Models;
 using clone_oblt.Services.Interfaces;
 using clone_oblt.Utils;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace clone_oblt.Services
 {
@@ -39,18 +34,16 @@ namespace clone_oblt.Services
                 .WithJourneyData(journeyRequest.Data.OriginId, journeyRequest.Data.DestinationId, journeyRequest.Data.DepartureDate)
                 .Build();
 
-            var jsonSettings = new JsonSerializerSettings
-            {
-                DateFormatString = "yyyy-MM-dd"
-            };
-            var jsonContent = new StringContent(JsonConvert.SerializeObject(request, jsonSettings), Encoding.UTF8, "application/json");
+            var jsonContent = new StringContent(
+                JsonConvert.SerializeObject(request, new JsonSerializerSettings { DateFormatString = "yyyy-MM-dd" }),
+                Encoding.UTF8,
+                "application/json"
+            );
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, _journeysApiUrl)
-            {
-                Content = jsonContent
-            };
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, _journeysApiUrl) { Content = jsonContent };
 
-            AddHeadersToRequest(requestMessage);
+
+            HeaderUtils.AddHeadersToRequest(requestMessage, _apiKey);
 
             try
             {
@@ -88,34 +81,6 @@ namespace clone_oblt.Services
                 .OrderBy(journey => journey.Journey.Departure)
                 .ThenBy(journey => journey.Journey.Stops.FirstOrDefault()?.Time)
                 .ToList();
-        }
-
-        private void AddHeadersToRequest(HttpRequestMessage requestMessage)
-        {
-            var headers = new
-            {
-                Authorization = $"Basic {_apiKey}",
-                ContentType = "application/json"
-            };
-
-            var headerDictionary = ConvertHeadersToDictionary(headers);
-
-            foreach (var header in headerDictionary)
-            {
-                requestMessage.Headers.Add(header.Key, header.Value);
-                Console.WriteLine($"Header: {header.Key} = {header.Value}");
-            }
-        }
-
-        private Dictionary<string, string> ConvertHeadersToDictionary(object headers)
-        {
-            var headerDictionary = new Dictionary<string, string>();
-            var properties = headers.GetType().GetProperties();
-            foreach (var property in properties)
-            {
-                headerDictionary.Add(property.Name, property.GetValue(headers)?.ToString());
-            }
-            return headerDictionary;
         }
     }
 }
