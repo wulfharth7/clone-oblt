@@ -10,9 +10,9 @@ namespace clone_oblt.Controllers
     [ApiController]
     public class SessionController : Controller
     {
-        private readonly IObiletApiService _apiService;
+        private readonly ISessionApiService _apiService;
 
-        public SessionController(IObiletApiService apiService)
+        public SessionController(ISessionApiService apiService)
         {
             _apiService = apiService;
         }

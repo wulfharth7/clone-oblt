@@ -1,6 +1,6 @@
 ﻿namespace clone_oblt.Services.Interfaces
 {
-    public interface IObiletApiService
+    public interface ISessionApiService
     {
         Task<T> PostAsync<T>(object body);
     }
