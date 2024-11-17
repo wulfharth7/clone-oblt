@@ -3,19 +3,25 @@ import {
   Box,
   Typography,
   CircularProgress,
+  Button,
+  Card,
+  CardContent,
   List,
   ListItem,
-  ListItemText,
 } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import trLocale from 'date-fns/locale/tr';
 
 const JourneyResults = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { origin, destination, departureDate } = location.state || {};
 
   const [loading, setLoading] = useState(true);
   const [journeys, setJourneys] = useState([]);
 
+  // Function to create a new session
   const createSession = async () => {
     try {
       const response = await fetch('https://localhost:7046/api/Session/create', {
@@ -45,6 +51,7 @@ const JourneyResults = () => {
     }
   };
 
+  // Function to fetch journeys
   const fetchJourneys = async () => {
     try {
       const sessionId = sessionStorage.getItem('session-id');
@@ -115,7 +122,11 @@ const JourneyResults = () => {
     };
 
     initialize();
-  }, []);
+  }, [origin.id, destination.id, departureDate]);
+
+  const handleBack = () => {
+    navigate('/');
+  };
 
   if (loading) {
     return (
@@ -130,61 +141,71 @@ const JourneyResults = () => {
     );
   }
 
+  const formattedDate = format(new Date(departureDate), 'do MMMM, EEEE', {
+    locale: trLocale,
+  });
+
   return (
     <Box padding={4}>
+      <Button variant="contained" color="primary" onClick={handleBack}>
+        Back
+      </Button>
+      {/* Title at the top */}
       <Typography variant="h4" gutterBottom>
-        Journey Results
+        {origin.name} - {destination.name}
+      </Typography>
+      {/* Date and day */}
+      <Typography variant="h6" gutterBottom>
+        {formattedDate}
       </Typography>
       {journeys.length === 0 ? (
         <Typography>No journeys found.</Typography>
       ) : (
-        <List>
-          {journeys.map((journeyItem, index) => {
-            const {
-              partnerName,
-              busType,
-              totalSeats,
-              availableSeats,
-              journey,
-            } = journeyItem;
-            const { stops } = journey;
+        <Box sx={{ maxHeight: '70vh', overflow: 'auto' }}>
+          <List>
+            {journeys.map((journeyItem, index) => {
+              const {
+                partnerName,
+                journey: {
+                  stops,
+                  origin: journeyOrigin,
+                  destination: journeyDestination,
+                },
+              } = journeyItem;
 
-            // Find origin and destination stops
-            const originStop = stops.find((stop) => stop.isOrigin);
-            const destinationStop = stops.find((stop) => stop.isDestination);
+              // Find origin and destination stops
+              const originStop = stops.find((stop) => stop.isOrigin);
+              const destinationStop = stops.find(
+                (stop) => stop.isDestination
+              );
 
-            return (
-              <ListItem key={index}>
-                <ListItemText
-                  primary={`${originStop?.name} to ${destinationStop?.name}`}
-                  secondary={
-                    <>
-                      <Typography component="span" variant="body2">
-                        Departure: {new Date(originStop?.time).toLocaleString()}
+              const departureTime = originStop
+                ? format(new Date(originStop.time), 'HH:mm')
+                : 'N/A';
+              const arrivalTime = destinationStop
+                ? format(new Date(destinationStop.time), 'HH:mm')
+                : 'N/A';
+
+              return (
+                <ListItem key={index}>
+                  <Card variant="outlined" sx={{ width: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6" component="div">
+                        {departureTime} → {arrivalTime}
                       </Typography>
-                      <br />
-                      <Typography component="span" variant="body2">
-                        Arrival: {new Date(destinationStop?.time).toLocaleString()}
+                      <Typography variant="body1" color="textSecondary">
+                        {journeyOrigin} - {journeyDestination}
                       </Typography>
-                      <br />
-                      <Typography component="span" variant="body2">
-                        Bus Type: {busType}
-                      </Typography>
-                      <br />
-                      <Typography component="span" variant="body2">
+                      <Typography variant="body2" color="textSecondary">
                         Operator: {partnerName}
                       </Typography>
-                      <br />
-                      <Typography component="span" variant="body2">
-                        Seats Available: {availableSeats} / {totalSeats}
-                      </Typography>
-                    </>
-                  }
-                />
-              </ListItem>
-            );
-          })}
-        </List>
+                    </CardContent>
+                  </Card>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
       )}
     </Box>
   );

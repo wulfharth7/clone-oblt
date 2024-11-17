@@ -53,14 +53,14 @@ namespace clone_oblt.Controllers
                 }
                 else
                 {
-                    HttpContext.Session.SetString("session-id", "+Eqe+WzrJSYolfN+ulXchQQ0qhQEG5gqfBMqmwwuetQ=");
-                    HttpContext.Session.SetString("device-id", "VfH1N/wv59/yjYnlpCpcmQUCzoSAPQDxRiDjWENrXrg=");
+                    HttpContext.Session.SetString("session-id", "PqtdftjloK3Kpka97+ILDzMa6D9740nggLiTzXiLlzA=");
+                    HttpContext.Session.SetString("device-id", "PqtdftjloK3Kpka97+ILDzMa6D9740nggLiTzXiLlzA=");
                     var responsee = new CreateSessionResponse
                     {
                         Data = new SessionData
                         {
                             SessionId = "+Eqe+WzrJSYolfN+ulXchQQ0qhQEG5gqfBMqmwwuetQ=",
-                            DeviceId = "VfH1N/wv59/yjYnlpCpcmQUCzoSAPQDxRiDjWENrXrg="
+                            DeviceId = "PqtdftjloK3Kpka97+ILDzMa6D9740nggLiTzXiLlzA="
                         }
                     };
                     return Ok(new
