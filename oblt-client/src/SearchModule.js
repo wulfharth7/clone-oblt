@@ -114,15 +114,49 @@ const SearchModule = () => {
     try {
       const data = await fetchBusLocations(null);
       if (data.length > 0) {
-        const limitedSuggestions = data.slice(0, 10);
-        setSuggestions1(limitedSuggestions);
-        setSuggestions2(limitedSuggestions);
+     
+        setSuggestions1(data);
+        setSuggestions2(data);
 
-        setValue1(limitedSuggestions[0]);
-        setInputValue1(limitedSuggestions[0]?.name || '');
+        const savedOrigin = localStorage.getItem('lastOrigin');
+        const savedDestination = localStorage.getItem('lastDestination');
+        const savedDepartureDate = localStorage.getItem('lastDepartureDate');
 
-        setValue2(limitedSuggestions[1]); // Default to a different option
-        setInputValue2(limitedSuggestions[1]?.name || '');
+        let parsedOrigin = null;
+        if (savedOrigin) {
+          parsedOrigin = JSON.parse(savedOrigin);
+        }
+
+        let parsedDestination = null;
+        if (savedDestination) {
+          parsedDestination = JSON.parse(savedDestination);
+        }
+
+        const origin = data.find((loc) => loc.id === parsedOrigin?.id);
+        const destination = data.find((loc) => loc.id === parsedDestination?.id);
+
+        if (origin) {
+          setValue1(origin);
+          setInputValue1(origin.name);
+        } else {
+          setValue1(data[0]);
+          setInputValue1(data[0]?.name || '');
+        }
+
+        if (destination) {
+          setValue2(destination);
+          setInputValue2(destination.name);
+        } else if (data.length > 1) {
+          setValue2(data[1]); 
+          setInputValue2(data[1]?.name || '');
+        } else {
+          setValue2(data[0]);
+          setInputValue2(data[0]?.name || '');
+        }
+
+        if (savedDepartureDate) {
+          setDepartureDate(savedDepartureDate);
+        }
       }
       setLoading(false);
     } catch (error) {
@@ -180,6 +214,11 @@ const SearchModule = () => {
       alert('Please select both origin and destination locations.');
       return;
     }
+
+    // Save the current values to localStorage
+    localStorage.setItem('lastOrigin', JSON.stringify(value1));
+    localStorage.setItem('lastDestination', JSON.stringify(value2));
+    localStorage.setItem('lastDepartureDate', departureDate);
 
     navigate('/journey-results', {
       state: {
@@ -317,19 +356,19 @@ const SearchModule = () => {
             min: today, // Set minimum date to today
           }}
         />
-        //buttons for today and tomorrow
+        {/* Buttons for today and tomorrow */}
         <Box display="flex" justifyContent="flex-start" marginTop={1} gap={1}>
           <Button
             variant={departureDate === today ? 'contained' : 'outlined'}
             onClick={() => setDepartureDate(today)}
-            size="small" // Adjusted size
+            size="small"
           >
             Today
           </Button>
           <Button
             variant={departureDate === tomorrow ? 'contained' : 'outlined'}
             onClick={() => setDepartureDate(tomorrow)}
-            size="small" // Adjusted size
+            size="small"
           >
             Tomorrow
           </Button>
