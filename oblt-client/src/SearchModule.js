@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, Autocomplete, IconButton } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Autocomplete,
+  IconButton,
+} from '@mui/material';
 import { SwapHoriz, LocationOn } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const SearchModule = () => {
   const [value1, setValue1] = useState(null);
@@ -18,6 +26,8 @@ const SearchModule = () => {
   });
 
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   const createSession = async () => {
     try {
@@ -68,14 +78,17 @@ const SearchModule = () => {
         language: 'tr-TR',
       };
 
-      const response = await fetch('https://localhost:7046/api/buslocation/getbuslocations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        'https://localhost:7046/api/buslocation/getbuslocations',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+          credentials: 'include',
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch bus locations: ${response.statusText}`);
@@ -157,6 +170,21 @@ const SearchModule = () => {
     setSuggestions2(tempSuggestions);
   };
 
+  const handleSearch = () => {
+    if (!value1 || !value2) {
+      alert('Please select both origin and destination locations.');
+      return;
+    }
+
+    navigate('/journey-results', {
+      state: {
+        origin: value1,
+        destination: value2,
+        departureDate: departureDate,
+      },
+    });
+  };
+
   useEffect(() => {
     const initialize = async () => {
       const sessionId = sessionStorage.getItem('session-id');
@@ -192,7 +220,12 @@ const SearchModule = () => {
       maxWidth="600px"
       margin="auto"
     >
-      <Typography variant="h4" gutterBottom fontWeight="bold" color="primary.main">
+      <Typography
+        variant="h4"
+        gutterBottom
+        fontWeight="bold"
+        color="primary.main"
+      >
         Bus Location Search
       </Typography>
 
@@ -208,14 +241,22 @@ const SearchModule = () => {
             value={value1}
             inputValue={inputValue1}
             onInputChange={(event, newInputValue, reason) =>
-              handleInputChange(event, newInputValue, setInputValue1, setSuggestions1, reason)
+              handleInputChange(
+                event,
+                newInputValue,
+                setInputValue1,
+                setSuggestions1,
+                reason
+              )
             }
             onChange={(event, newValue) =>
               handleValueChange(event, newValue, setValue1, value2)
             }
             options={suggestions1}
             getOptionLabel={(option) => option.name || ''}
-            renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" fullWidth />
+            )}
             freeSolo
           />
         </Box>
@@ -235,14 +276,22 @@ const SearchModule = () => {
             value={value2}
             inputValue={inputValue2}
             onInputChange={(event, newInputValue, reason) =>
-              handleInputChange(event, newInputValue, setInputValue2, setSuggestions2, reason)
+              handleInputChange(
+                event,
+                newInputValue,
+                setInputValue2,
+                setSuggestions2,
+                reason
+              )
             }
             onChange={(event, newValue) =>
               handleValueChange(event, newValue, setValue2, value1)
             }
             options={suggestions2}
             getOptionLabel={(option) => option.name || ''}
-            renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" fullWidth />
+            )}
             freeSolo
           />
         </Box>
@@ -264,7 +313,12 @@ const SearchModule = () => {
       </Box>
 
       <Box display="flex" justifyContent="flex-end" marginTop={2}>
-        <Button variant="contained" color="primary" size="large">
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={handleSearch}
+        >
           Search
         </Button>
       </Box>
