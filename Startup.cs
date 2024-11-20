@@ -6,6 +6,7 @@ using clone_oblt.Models;
 using clone_oblt.Services;
 using clone_oblt.Services.Interfaces;
 using clone_oblt.Utils;
+using Newtonsoft.Json.Serialization;
 
 namespace clone_oblt
 {
@@ -29,8 +30,13 @@ namespace clone_oblt
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IBusLocationApiService, BusLocationApiService>();
             services.AddScoped<IJourneysApiService, JourneysApiService>();
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                });
             services.AddScoped<ISessionHelperService, SessionHelperService>();
-            services.AddScoped<IRequestBuilder<CreateSessionRequest>, SessionRequestBuilder>();
+            services.AddScoped<IRequestBuilder<SessionRequest>, SessionRequestBuilder>();
             services.AddScoped<IRequestBuilder<JourneyRequest>, JourneyRequestBuilder>();
             services.AddScoped<IRequestBuilder<BusLocationRequest>, BusLocationBuilder>();
             services.AddCors(options =>

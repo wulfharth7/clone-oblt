@@ -1,4 +1,5 @@
-﻿using clone_oblt.Models;
+﻿using clone_oblt.Helpers;
+using clone_oblt.Models;
 using clone_oblt.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -22,31 +23,11 @@ namespace clone_oblt.Controllers
             try
             {
                 var busLocations = await _busLocationApiService.GetBusLocationsAsync(requestbody);
-
-                if (busLocations != null)
-                {
-                    return Ok(new
-                    {
-                        status = "Success",
-                        data = busLocations
-                    });
-                }
-                else
-                {
-                    return BadRequest(new
-                    {
-                        status = "Error",
-                        message = "Failed to retrieve bus locations."
-                    });
-                }
+                return ResponseUtil.Success(busLocations);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    status = "Error",
-                    message = $"Internal server error: {ex.Message}"
-                });
+                return ResponseUtil.Error(ex.Message.ToString());
             }
         }
     }

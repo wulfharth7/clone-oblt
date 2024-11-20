@@ -17,8 +17,19 @@ namespace clone_oblt.Services
 
         public async Task<List<JourneyDetails>> GetJourneysAsync(JourneyRequest journeyRequest)
         {
+            if (CheckSameDestination(journeyRequest))
+            {
+                throw new Exception("Destination and Origin locations can't be the same!");
+            }
+            else
+            {
+                return await GetJourneys(journeyRequest);
+            }
+        }
+
+        private async Task<List<JourneyDetails>> GetJourneys(JourneyRequest journeyRequest)
+        {
             var (sessionId, deviceId) = _sessionHelperService.GetSessionInfo();
-            Console.WriteLine("[TEST TEST TEST ]"+ sessionId);
 
             var request = new JourneyRequestBuilder()
                 .WithDeviceSession(sessionId, deviceId)
@@ -28,9 +39,11 @@ namespace clone_oblt.Services
                 .Build();
 
             var journeyResponse = await SendRequestAsync<JourneyRequest, JourneyResponse>(request, _apiUrl);
-            return SortJourneysByDepartureDateAndTime(journeyResponse);
+            if (journeyResponse != null)
+                return SortJourneysByDepartureDateAndTime(journeyResponse);
+            else
+                throw new Exception();
         }
-
         private List<JourneyDetails> SortJourneysByDepartureDateAndTime(JourneyResponse journeysResponse)
         {
             if (journeysResponse?.Data == null)
@@ -55,5 +68,17 @@ namespace clone_oblt.Services
                 .ThenBy(journey => journey.Journey.Stops.FirstOrDefault()?.Time)
                 .ToList();
         }
+        private bool CheckSameDestination(JourneyRequest req)
+        {
+            if (req.Data.DestinationId == req.Data.OriginId)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
     }
 }

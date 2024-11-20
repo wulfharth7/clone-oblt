@@ -36,14 +36,53 @@ const SearchModule = () => {
 
   const createSession = async () => {
     try {
-      const response = await fetch('https://localhost:7046/api/Session/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
+      // Fetch client IP using a third-party service or a custom API
+    const ipResponse = await fetch('https://api64.ipify.org?format=json');
+    const { ip } = await ipResponse.json();
 
+    // Detect browser name and version
+    const userAgent = navigator.userAgent;
+    let browserName = 'Unknown';
+    let browserVersion = 'Unknown';
+
+    if (userAgent.includes('Chrome')) {
+      browserName = 'Chrome';
+      browserVersion = userAgent.match(/Chrome\/([\d.]+)/)[1];
+    } else if (userAgent.includes('Firefox')) {
+      browserName = 'Firefox';
+      browserVersion = userAgent.match(/Firefox\/([\d.]+)/)[1];
+    } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+      browserName = 'Safari';
+      browserVersion = userAgent.match(/Version\/([\d.]+)/)[1];
+    } else if (userAgent.includes('Edge')) {
+      browserName = 'Edge';
+      browserVersion = userAgent.match(/Edg\/([\d.]+)/)[1];
+    } else if (userAgent.includes('Trident') || userAgent.includes('MSIE')) {
+      browserName = 'Internet Explorer';
+      browserVersion = userAgent.match(/(?:MSIE |rv:)([\d.]+)/)[1];
+    }
+
+    // Prepare the request body
+    const requestBody = {
+      connection: {
+        "ip-address": ip,
+      },
+      browser: {
+        name: browserName,
+        version: browserVersion,
+      },
+    };
+
+    // Send the data to the API
+    const response = await fetch('https://localhost:7046/api/Session/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(requestBody),
+    });
+      console.log(JSON.stringify(requestBody))
       if (!response.ok) {
         throw new Error(`Failed to create session: ${response.statusText}`);
       }

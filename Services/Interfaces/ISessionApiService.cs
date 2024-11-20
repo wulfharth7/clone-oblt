@@ -1,7 +1,10 @@
-﻿namespace clone_oblt.Services.Interfaces
+﻿using clone_oblt.Models;
+using Microsoft.AspNetCore.Mvc;
+
+namespace clone_oblt.Services.Interfaces
 {
     public interface ISessionApiService
     {
-        Task<T> PostAsync<T>(object body);
+        Task<SessionResponse> CreateSessionAsync([FromBody] SessionRequest requestbody);
     }
 }

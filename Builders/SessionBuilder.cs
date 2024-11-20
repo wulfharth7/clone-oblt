@@ -13,7 +13,7 @@ namespace clone_oblt.Builders
     //And gives us a real easyness, if we want to change them in the future.
 
     //Hence, I've implemented Builder DP.
-    public class SessionRequestBuilder : IRequestBuilder<CreateSessionRequest>
+    public class SessionRequestBuilder : IRequestBuilder<SessionRequest>
     {
         private int _type;
         private Models.ConnectionInfo _connectionInfo = new Models.ConnectionInfo();
@@ -40,7 +40,7 @@ namespace clone_oblt.Builders
             return this;
         }
 
-        public CreateSessionRequest Build()
+        public SessionRequest Build()
         {
             if (_connectionInfo == null || string.IsNullOrEmpty(_connectionInfo.IpAddress) || string.IsNullOrEmpty(_connectionInfo.Port))
             {
@@ -52,7 +52,7 @@ namespace clone_oblt.Builders
                 throw new InvalidOperationException("Browser details are required to build the request.");
             }
 
-            return new CreateSessionRequest
+            return new SessionRequest
             {
                 Type = _type,
                 Browser = _browserInfo,

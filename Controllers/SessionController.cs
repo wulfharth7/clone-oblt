@@ -23,20 +23,12 @@ namespace clone_oblt.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateSession()
+        public async Task<IActionResult> CreateSession([FromBody] SessionRequest request)
         {
             try
             {
-                var request = new SessionRequestBuilder()
-                    .WithType(1)
-                    .WithConnection("165.114.41.21", "5117")
-                    .WithBrowser("Chrome", "47.0.0.12") 
-                    .Build();
+                var response = await _apiService.CreateSessionAsync(request);
 
-                var response = await _apiService.PostAsync<CreateSessionResponse>(request);
-                var serializedconnection = JsonConvert.SerializeObject(response);
-
-                Console.WriteLine("REEEEESPONSE " + serializedconnection);
                 if (response != null && response.Status == "Success" && response.Data != null)
                 {
                     HttpContext.Session.SetString("session-id", response.Data.SessionId);

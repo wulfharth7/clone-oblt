@@ -26,6 +26,9 @@ namespace clone_oblt.Services
                 .Build();
 
             var busLocationResponse = await SendRequestAsync<BusLocationRequest, BusLocationResponse>(request, _apiUrl);
+            if (busLocationResponse == null)
+                throw new Exception("Bus Location could not be found.");
+
             return busLocationResponse?.Data?.ToList();
         }
     }
