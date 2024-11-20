@@ -18,7 +18,7 @@ namespace clone_oblt.Services
         public async Task<List<BusLocationData>> GetBusLocationsAsync(BusLocationRequest requestbody)
         {
             var (sessionId, deviceId) = _sessionHelperService.GetSessionInfo();
-            var request = new BusLocationRequestBuilder()
+            var request = new BusLocationBuilder()
                 .WithBusLocationData(requestbody.Data)
                 .WithDeviceSession(sessionId, deviceId)
                 .WithDate(DateTime.Now)

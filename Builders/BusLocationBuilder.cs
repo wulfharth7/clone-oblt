@@ -11,33 +11,33 @@ namespace clone_oblt.Builders
     //And gives us a real easyness, if we want to change them in the future.
 
     //Hence, I've implemented Builder DP.
-    public class BusLocationRequestBuilder : IRequestBuilder<BusLocationRequest>
+    public class BusLocationBuilder : IRequestBuilder<BusLocationRequest>
     {
         private DeviceSession _deviceSession = new DeviceSession();
         private DateTime? _date;
         private string? _language;
         private string? _busLocationData;
 
-        public BusLocationRequestBuilder WithDeviceSession(string sessionId, string deviceId)
+        public BusLocationBuilder WithDeviceSession(string sessionId, string deviceId)
         {
             _deviceSession.SessionId = sessionId;
             _deviceSession.DeviceId = deviceId;
             return this;
         }
 
-        public BusLocationRequestBuilder WithDate(DateTime? date)
+        public BusLocationBuilder WithDate(DateTime? date)
         {
             _date = date;
             return this;
         }
 
-        public BusLocationRequestBuilder WithLanguage(string? language)
+        public BusLocationBuilder WithLanguage(string? language)
         {
             _language = language;
             return this;
         }
 
-        public BusLocationRequestBuilder WithBusLocationData(string? data)
+        public BusLocationBuilder WithBusLocationData(string? data)
         {
             _busLocationData = data;
             return this;

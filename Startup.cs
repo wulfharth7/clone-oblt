@@ -30,9 +30,18 @@ namespace clone_oblt
             services.AddScoped<IBusLocationApiService, BusLocationApiService>();
             services.AddScoped<IJourneysApiService, JourneysApiService>();
             services.AddScoped<ISessionHelperService, SessionHelperService>();
-            services.AddScoped<IRequestBuilder<CreateSessionResponse>, CreateSessionResponseBuilder>();
+            services.AddScoped<IRequestBuilder<CreateSessionRequest>, SessionRequestBuilder>();
             services.AddScoped<IRequestBuilder<JourneyRequest>, JourneyRequestBuilder>();
-            services.AddScoped<IRequestBuilder<BusLocationRequest>, BusLocationRequestBuilder>();
+            services.AddScoped<IRequestBuilder<BusLocationRequest>, BusLocationBuilder>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp",
+                    policy => policy.WithOrigins("http://localhost:3000")
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .AllowCredentials());
+            });
+
 
             CreateSession(services);
             
@@ -40,6 +49,8 @@ namespace clone_oblt
         // Middleware order here is significantly important.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors("AllowReactApp");
+
             if (!env.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
