@@ -1,6 +1,7 @@
 ﻿using clone_oblt.Builders;
 using clone_oblt.Builders.Interfaces;
 using clone_oblt.Helpers;
+using clone_oblt.Helpers.HelperInterfaces;
 using clone_oblt.Models;
 using clone_oblt.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +17,12 @@ namespace clone_oblt.Controllers
     public class SessionController : ControllerBase
     {
         private readonly ISessionApiService _apiService;
+        private readonly ISessionHelperService _sessionHelperService;
 
-        public SessionController(ISessionApiService apiService)
+        public SessionController(ISessionApiService apiService, ISessionHelperService sessionHelperService)
         {
             _apiService = apiService;
+            _sessionHelperService = sessionHelperService;
         }
 
         [HttpPost("create")]
@@ -28,16 +31,7 @@ namespace clone_oblt.Controllers
             try
             {
                 var response = await _apiService.CreateSessionAsync(request);
-
-                if (response != null && response.Status == "Success" && response.Data != null)
-                {
-                    HttpContext.Session.SetString("session-id", response.Data.SessionId); // We have to save these session-id and device-id values.
-                    HttpContext.Session.SetString("device-id", response.Data.DeviceId);   // So we can use them application-wide for the user's requests.
-                                                                                          // This function helps us to do that.
-                    return ResponseUtil.Success(response.Data);
-                }
-
-                return ResponseUtil.Error("Failed to create session.");
+                return _sessionHelperService.SetSessionInfo(response);
             }
             catch (Exception ex)
             {

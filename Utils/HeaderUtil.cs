@@ -2,7 +2,7 @@
 
 namespace clone_oblt.Utils
 {
-    public static class HeaderUtils
+    public static class HeaderUtil
     {
         public static void AddHeadersToRequest(HttpRequestMessage requestMessage, string _apiKey)
         {

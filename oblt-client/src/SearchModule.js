@@ -13,11 +13,6 @@ import { useNavigate } from 'react-router-dom';
 const SearchModule = () => {
   const navigate = useNavigate();
 
-  //TODO noktayı sil
-  // phone kımsında media query yaz giriş için
-  //tarih kontrolü koy localdb'ye geçmişte kalmasın.
-
-
   // Calculate today's and tomorrow's dates
   const todayDate = new Date();
   const today = todayDate.toISOString().split('T')[0];
@@ -158,27 +153,26 @@ const SearchModule = () => {
     try {
       const data = await fetchBusLocations(null);
       if (data.length > 0) {
-     
         setSuggestions1(data);
         setSuggestions2(data);
-
+  
         const savedOrigin = localStorage.getItem('lastOrigin');
         const savedDestination = localStorage.getItem('lastDestination');
         const savedDepartureDate = localStorage.getItem('lastDepartureDate');
-
+  
         let parsedOrigin = null;
         if (savedOrigin) {
           parsedOrigin = JSON.parse(savedOrigin);
         }
-
+  
         let parsedDestination = null;
         if (savedDestination) {
           parsedDestination = JSON.parse(savedDestination);
         }
-
+  
         const origin = data.find((loc) => loc.id === parsedOrigin?.id);
         const destination = data.find((loc) => loc.id === parsedDestination?.id);
-
+  
         if (origin) {
           setValue1(origin);
           setInputValue1(origin.name);
@@ -186,20 +180,31 @@ const SearchModule = () => {
           setValue1(data[0]);
           setInputValue1(data[0]?.name || '');
         }
-
+  
         if (destination) {
           setValue2(destination);
           setInputValue2(destination.name);
         } else if (data.length > 1) {
-          setValue2(data[1]); 
+          setValue2(data[1]);
           setInputValue2(data[1]?.name || '');
         } else {
           setValue2(data[0]);
           setInputValue2(data[0]?.name || '');
         }
-
+  
         if (savedDepartureDate) {
-          setDepartureDate(savedDepartureDate);
+          const savedDate = new Date(savedDepartureDate);
+          const todayDate = new Date();
+          todayDate.setHours(0, 0, 0, 0); // Normalize to start of day
+  
+          if (savedDate >= todayDate) {
+            setDepartureDate(savedDepartureDate);
+          } else {
+            setDepartureDate(tomorrow);
+            localStorage.setItem('lastDepartureDate', tomorrow); // Update to tomorrow
+          }
+        } else {
+          setDepartureDate(tomorrow);
         }
       }
       setLoading(false);
@@ -208,6 +213,7 @@ const SearchModule = () => {
       setLoading(false);
     }
   };
+  
 
   const handleInputChange = async (
     event,

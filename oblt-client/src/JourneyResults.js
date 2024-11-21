@@ -145,7 +145,7 @@ const JourneyResults = () => {
     );
   }
 
-  const formattedDate = format(new Date(departureDate), 'do MMMM EEEE', {
+  const formattedDate = format(new Date(departureDate), 'd MMMM EEEE', {
     locale: trLocale,
   });
 

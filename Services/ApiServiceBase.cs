@@ -21,7 +21,7 @@ namespace clone_oblt.Services
         {
             _httpClient = httpClient;
             _apiUrl = configuration[apiUrlKey];
-            _apiKey = SingletonApiKey.GetInstance().ApiKey;
+            _apiKey = SingletonApiKeyUtil.GetInstance().ApiKey;
         }
 
         //Because all of the api endpoints that we are using right now are POST requests, I didn't implement any other type HttpMethod yet.
@@ -35,7 +35,7 @@ namespace clone_oblt.Services
                 Content = jsonContent
             };
 
-            HeaderUtils.AddHeadersToRequest(requestMessage, _apiKey);
+            HeaderUtil.AddHeadersToRequest(requestMessage, _apiKey);
 
             try
             {

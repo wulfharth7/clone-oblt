@@ -9,22 +9,22 @@ using Newtonsoft.Json;
 
 namespace clone_oblt.Utils
 {
-    public sealed class SingletonApiKey
+    public sealed class SingletonApiKeyUtil
     {
         //Lazy initialization checks if an instance exists of the class or not. If its not, it get created. Works very well with Singleton Objects.
-        private static readonly Lazy<SingletonApiKey> _instance = new Lazy<SingletonApiKey>(() => new SingletonApiKey());
+        private static readonly Lazy<SingletonApiKeyUtil> _instance = new Lazy<SingletonApiKeyUtil>(() => new SingletonApiKeyUtil());
         
         //I'm aware that this is not the best approach to a basic api key, I just wanted to do some extra work here and also not leak the api key accidentally or smth.
         private readonly string _desktopConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ApiKey.json"); // Path to the API key configuration file on the desktop
         
         public string ApiKey { get; private set; }
 
-        private SingletonApiKey()
+        private SingletonApiKeyUtil()
         {
             LoadApiKey();
         }
 
-        public static SingletonApiKey GetInstance()
+        public static SingletonApiKeyUtil GetInstance()
         {
             return _instance.Value;
         }
