@@ -21,7 +21,6 @@ const JourneyResults = () => {
   const [loading, setLoading] = useState(true);
   const [journeys, setJourneys] = useState([]);
 
-  // Function to create a new session
   const createSession = async () => {
     try {
       const response = await fetch('https://localhost:7046/api/Session/create', {
@@ -51,7 +50,6 @@ const JourneyResults = () => {
     }
   };
 
-  // Function to fetch journeys
   const fetchJourneys = async () => {
     try {
       const sessionId = sessionStorage.getItem('session-id');
@@ -63,16 +61,16 @@ const JourneyResults = () => {
       }
 
       const requestBody = {
-        deviceSession: {
-          sessionId: sessionId,
-          deviceId: deviceId,
+        "device-session": {
+          "session-id": sessionId,
+          "device-id": deviceId,
         },
-        date: new Date().toISOString(),
-        language: 'tr-TR',
-        data: {
-          originId: origin.id,
-          destinationId: destination.id,
-          departureDate: departureDate,
+        "date": new Date().toISOString(),
+        "language": 'tr-TR',
+        "data": {
+          "origin-id": origin.id,
+          "destination-id": destination.id,
+          "departure-date": departureDate,
         },
       };
 
@@ -103,7 +101,6 @@ const JourneyResults = () => {
     }
   };
 
-  // useEffect to initialize session and fetch journeys
   useEffect(() => {
     const initialize = async () => {
       const sessionId = sessionStorage.getItem('session-id');
@@ -142,7 +139,6 @@ const JourneyResults = () => {
     );
   }
 
-  // Format the departure date and day
   const formattedDate = format(new Date(departureDate), 'do MMMM, EEEE', {
     locale: trLocale,
   });
@@ -152,11 +148,9 @@ const JourneyResults = () => {
       <Button variant="contained" color="primary" onClick={handleBack}>
         Back
       </Button>
-      {/* Title at the top */}
       <Typography variant="h5" gutterBottom>
         {origin.name} - {destination.name}
       </Typography>
-      {/* Date and day */}
       <Typography variant="subtitle1" gutterBottom>
         {formattedDate}
       </Typography>
@@ -167,8 +161,8 @@ const JourneyResults = () => {
           <List>
             {journeys.map((journeyItem, index) => {
               const {
-                partnerName,
-                partnerId,
+                'partner-name': partnerName,
+                'partner-id': partnerId,
                 features,
                 journey: {
                   stops,
@@ -177,13 +171,11 @@ const JourneyResults = () => {
                 },
               } = journeyItem;
 
-              // Construct the logo URL
               const logoUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/partner/${partnerId}-sm.png`;
 
-              // Find origin and destination stops
-              const originStop = stops.find((stop) => stop.isOrigin);
+              const originStop = stops.find((stop) => stop['is-origin']);
               const destinationStop = stops.find(
-                (stop) => stop.isDestination
+                (stop) => stop['is-destination']
               );
 
               const departureTime = originStop
@@ -193,7 +185,6 @@ const JourneyResults = () => {
                 ? format(new Date(destinationStop.time), 'HH:mm')
                 : 'N/A';
 
-              // Construct feature icons
               const featureIcons = features.map((feature) => {
                 const featureIconUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/feature/${feature.id}.svg`;
                 return (
@@ -211,7 +202,6 @@ const JourneyResults = () => {
                 <ListItem key={index}>
                   <Card variant="outlined" sx={{ width: '100%' }}>
                     <CardContent>
-                      {/* Bus Firm Logo */}
                       <Box
                         display="flex"
                         justifyContent="center"
@@ -224,7 +214,6 @@ const JourneyResults = () => {
                           style={{ height: '50px' }}
                         />
                       </Box>
-                      {/* Departure and Arrival Times */}
                       <Box
                         display="flex"
                         justifyContent="center"
@@ -235,7 +224,6 @@ const JourneyResults = () => {
                           {departureTime} → {arrivalTime}
                         </Typography>
                       </Box>
-                      {/* Origin and Destination */}
                       <Box
                         display="flex"
                         justifyContent="center"
@@ -246,7 +234,6 @@ const JourneyResults = () => {
                           {journeyOrigin} - {journeyDestination}
                         </Typography>
                       </Box>
-                      {/* Operator Name */}
                       <Box
                         display="flex"
                         justifyContent="center"
@@ -257,7 +244,6 @@ const JourneyResults = () => {
                           {partnerName}
                         </Typography>
                       </Box>
-                      {/* Feature Icons */}
                       <Box
                         display="flex"
                         justifyContent="center"

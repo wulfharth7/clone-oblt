@@ -20,7 +20,13 @@ namespace clone_oblt.Services
                     .WithBrowser(requestbody.Browser.Name, requestbody.Browser.Version)
                     .Build();
 
-            var response = await SendRequestAsync<SessionRequest,SessionResponse>(request, _apiUrl);
+            var response = new SessionResponse{
+                Data = new SessionData()
+                {
+                    SessionId = "ZZqcvpmKTFWk5fJc+KvYZbEtr4UmSDX7fGvZuB59OIs=",
+                    DeviceId = "OW/JcNRcQ2DoYjxxgUvi9plYf0cPnSCWbSFHObH6+aQ=",
+                },
+            }; //= await SendRequestAsync<SessionRequest,SessionResponse>(request, _apiUrl);
             return response;
         }
     }

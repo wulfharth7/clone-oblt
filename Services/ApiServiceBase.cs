@@ -32,15 +32,15 @@ namespace clone_oblt.Services
             };
 
             HeaderUtils.AddHeadersToRequest(requestMessage, _apiKey);
-
-            Console.WriteLine($"Final HttpRequestMessage Content: {await requestMessage.Content.ReadAsStringAsync()}"); // Debug the final message
+/*
+            Console.WriteLine($"Final HttpRequestMessage Content: {await requestMessage.Content.ReadAsStringAsync()}"); // Debug the final message*/
 
             try
             {
                 var response = await _httpClient.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
-                var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Response Content: {responseContent}"); // Debug response content
+                var responseContent = await response.Content.ReadAsStringAsync();/*
+                Console.WriteLine($"Response Content: {responseContent}"); // Debug response content*/
                 return JsonConvert.DeserializeObject<TResponse>(responseContent);
             }
             catch (HttpRequestException ex)

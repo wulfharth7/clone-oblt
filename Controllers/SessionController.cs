@@ -29,15 +29,16 @@ namespace clone_oblt.Controllers
             {
                 var response = await _apiService.CreateSessionAsync(request);
 
-                if (response != null && response.Status == "Success" && response.Data != null)
-                {
-                    HttpContext.Session.SetString("session-id", response.Data.SessionId);
-                    HttpContext.Session.SetString("device-id", response.Data.DeviceId);
-
+                /*if (response != null && response.Status == "Success" && response.Data != null)
+                {*/
+                    //For developing, sometimes i get 429 xd
+                    HttpContext.Session.SetString("session-id", "ZZqcvpmKTFWk5fJc+KvYZbEtr4UmSDX7fGvZuB59OIs=" /*response.Data.SessionId*/);
+                    HttpContext.Session.SetString("device-id", "OW/JcNRcQ2DoYjxxgUvi9plYf0cPnSCWbSFHObH6+aQ="/* response.Data.DeviceId*/);
+               
                     return ResponseUtil.Success(response.Data);
-                }
+                /*}
 
-                return ResponseUtil.Error("Failed to create session.");
+                return ResponseUtil.Error("Failed to create session.");*/
             }
             catch (Exception ex)
             {
