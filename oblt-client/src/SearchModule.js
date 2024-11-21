@@ -323,7 +323,14 @@ const SearchModule = () => {
         Bus Location Search
       </Typography>
 
-      <Box display="flex" gap={3} alignItems="center" width="100%">
+      {/* Main Content */}
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        gap={{ xs: 0.1, sm: 1.7 }} 
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        width="100%"
+      >
         <Box width="100%">
           <Box display="flex" alignItems="center" gap={1}>
             <LocationOn color="primary" />
@@ -355,9 +362,25 @@ const SearchModule = () => {
           />
         </Box>
 
-        <IconButton color="primary" onClick={handleSwap}>
-          <SwapHoriz />
-        </IconButton>
+        {/* Swap Button */}
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          sx={{
+            marginTop: { xs: 0, sm: '10px' },
+          }}
+        >
+          <IconButton
+            color="primary"
+            onClick={handleSwap}
+            sx={{
+              marginTop: { xs: 0, sm: '5px' },
+            }}
+          >
+            <SwapHoriz />
+          </IconButton>
+        </Box>
 
         <Box width="100%">
           <Box display="flex" alignItems="center" gap={1}>
@@ -391,6 +414,7 @@ const SearchModule = () => {
         </Box>
       </Box>
 
+      {/* Departure Date */}
       <Box width="100%" marginTop={2}>
         <TextField
           label="Departure Date"
@@ -403,10 +427,10 @@ const SearchModule = () => {
             shrink: true,
           }}
           inputProps={{
-            min: today, // Set minimum date to today
+            min: today,
           }}
         />
-        {/* Buttons for today and tomorrow */}
+        {/* Buttons for Today and Tomorrow */}
         <Box display="flex" justifyContent="flex-start" marginTop={1} gap={1}>
           <Button
             variant={departureDate === today ? 'contained' : 'outlined'}
@@ -425,7 +449,15 @@ const SearchModule = () => {
         </Box>
       </Box>
 
-      <Box display="flex" justifyContent="flex-end" marginTop={2}>
+      {/* Search Button */}
+      <Box
+        display="flex"
+        justifyContent="center"
+        width="100%"
+        sx={{
+          marginTop: { xs: '30px', sm: '20px' }, // Search button is lower in mobile view
+        }}
+      >
         <Button
           variant="contained"
           color="primary"
