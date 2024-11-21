@@ -6,6 +6,8 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace clone_oblt.Services
 {
+    //Api services in this project are our "proxies" to communicate with the api of obilet.
+    //For those specific endpoints, we use these classes, send request over them using the builders and session ids.
     public class SessionApiService : ApiServiceBase, Interfaces.ISessionApiService
     {
         public SessionApiService(HttpClient httpClient, IConfiguration configuration)
@@ -20,13 +22,7 @@ namespace clone_oblt.Services
                     .WithBrowser(requestbody.Browser.Name, requestbody.Browser.Version)
                     .Build();
 
-            var response = new SessionResponse{
-                Data = new SessionData()
-                {
-                    SessionId = "ZZqcvpmKTFWk5fJc+KvYZbEtr4UmSDX7fGvZuB59OIs=",
-                    DeviceId = "OW/JcNRcQ2DoYjxxgUvi9plYf0cPnSCWbSFHObH6+aQ=",
-                },
-            }; //= await SendRequestAsync<SessionRequest,SessionResponse>(request, _apiUrl);
+            var response = await SendRequestAsync<SessionRequest,SessionResponse>(request, _apiUrl); //Here we send a request to obilet and gather our session ids.
             return response;
         }
     }

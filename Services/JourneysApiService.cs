@@ -5,6 +5,8 @@ using clone_oblt.Services.Interfaces;
 
 namespace clone_oblt.Services
 {   
+    //Api services in this project are our "proxies" to communicate with the api of obilet.
+    //For those specific endpoints, we use these classes, send request over them using the builders and session ids.
     public class JourneysApiService : ApiServiceBase, IJourneysApiService
     {
         private readonly ISessionHelperService _sessionHelperService;
@@ -29,7 +31,7 @@ namespace clone_oblt.Services
 
         private async Task<List<JourneyDetails>> GetJourneys(JourneyRequest journeyRequest)
         {
-            var (sessionId, deviceId) = _sessionHelperService.GetSessionInfo();
+            var (sessionId, deviceId) = _sessionHelperService.GetSessionInfo(); //Brings the session info
 
             var request = new JourneyRequestBuilder()
                 .WithDeviceSession(sessionId, deviceId)
@@ -40,7 +42,7 @@ namespace clone_oblt.Services
 
             var journeyResponse = await SendRequestAsync<JourneyRequest, JourneyResponse>(request, _apiUrl);
             if (journeyResponse != null)
-                return SortJourneysByDepartureDateAndTime(journeyResponse);
+                return SortJourneysByDepartureDateAndTime(journeyResponse); //It was asked that, we give the response sorted by date and time. This function does that.
             else
                 throw new Exception();
         }
@@ -68,6 +70,9 @@ namespace clone_oblt.Services
                 .ThenBy(journey => journey.Journey.Stops.FirstOrDefault()?.Time)
                 .ToList();
         }
+        //The client actually checks if they are the same or not. 
+        //But there could be such cases where someone tries to send direct requests to our endpoint,
+        //Or a bug may happen and we dont want backend to let this situation run.
         private bool CheckSameDestination(JourneyRequest req)
         {
             if (req.Data.DestinationId == req.Data.OriginId)

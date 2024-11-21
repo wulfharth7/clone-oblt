@@ -16,6 +16,8 @@ namespace clone_oblt.Controllers
         //Paste into wwwroot in your ASP.NET MVC app.
 
         //Done. That is how we use the react app in our MVC app.
+
+        //In this commit, the front-end build is up-to date.
         [HttpGet]
         public IActionResult Index()
         {

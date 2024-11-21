@@ -18,9 +18,9 @@ namespace clone_oblt.Controllers
         }
 
         [HttpPost("getbuslocations")]
-        public async Task<IActionResult> GetBusLocations([FromBody] BusLocationRequest requestbody)
-        {
-            try
+        public async Task<IActionResult> GetBusLocations([FromBody] BusLocationRequest requestbody) //Basically, the controller for the page, where user
+        {                                                                                           //chooses their destination in the page to go.
+            try                                                                                     //Before clicking the search button, they use this function.
             {
                 var busLocations = await _busLocationApiService.GetBusLocationsAsync(requestbody);
                 return ResponseUtil.Success(busLocations);

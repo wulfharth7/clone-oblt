@@ -8,12 +8,18 @@ import {
   CardContent,
   List,
   ListItem,
+  useMediaQuery,
+  useTheme,
+  IconButton,
 } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import trLocale from 'date-fns/locale/tr';
 
 const JourneyResults = () => {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
   const location = useLocation();
   const navigate = useNavigate();
   const { origin, destination, departureDate } = location.state || {};
@@ -139,7 +145,7 @@ const JourneyResults = () => {
     );
   }
 
-  const formattedDate = format(new Date(departureDate), 'do MMMM, EEEE', {
+  const formattedDate = format(new Date(departureDate), 'do MMMM EEEE', {
     locale: trLocale,
   });
 
@@ -160,14 +166,19 @@ const JourneyResults = () => {
           onClick={handleBack}
           sx={{ alignSelf: isDesktop ? 'flex-start' : 'center', marginBottom: isDesktop ? 0 : 2 }}
         >
-        Back
-      </Button>
-      <Typography variant="h5" gutterBottom>
-        {origin.name} - {destination.name}
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom>
-        {formattedDate}
-      </Typography>
+          Back
+        </Button>
+        <Box textAlign="center">
+          <Typography variant="h5" fontWeight="bold">
+            {origin.name} - {destination.name}
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {formattedDate}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Journey List Section */}
       {journeys.length === 0 ? (
         <Typography>No journeys found.</Typography>
       ) : (
@@ -214,58 +225,57 @@ const JourneyResults = () => {
 
               return (
                 <ListItem key={index}>
-                  <Card variant="outlined" sx={{ width: '100%' }}>
-                    <CardContent>
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      width: '100%',
+                      marginBottom: 2,
+                      backgroundColor: 'white',
+                    }}
+                  >
+                    <CardContent
+                      sx={{
+                        display: 'flex',
+                        flexDirection: isDesktop ? 'row' : 'column',
+                        alignItems: isDesktop ? 'center' : 'center',
+                        justifyContent: isDesktop ? 'space-between' : 'center',
+                      }}
+                    >
                       <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        mb={1}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: isDesktop ? 'flex-start' : 'center',
+                          marginBottom: isDesktop ? 0 : 2,
+                          width: isDesktop ? 'auto' : '100%',
+                        }}
                       >
                         <img
                           src={logoUrl}
                           alt={`${partnerName} logo`}
-                          style={{ height: '50px' }}
+                          style={{ height: '50px', marginRight: isDesktop ? '16px' : 0 }}
                         />
                       </Box>
+
                       <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        mb={1}
+                        sx={{
+                          textAlign: 'center',
+                          flex: 1,
+                          marginBottom: isDesktop ? 0 : 2,
+                        }}
                       >
-                        <Typography variant="subtitle1" component="div">
+                        <Typography variant="h6" fontWeight="bold">
                           {departureTime} → {arrivalTime}
                         </Typography>
-                      </Box>
-                      <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        mb={1}
-                      >
                         <Typography variant="body2" color="textSecondary">
                           {journeyOrigin} - {journeyDestination}
                         </Typography>
+                        <Box mt={1}>{featureIcons}</Box>
                       </Box>
-                      <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        mb={1}
-                      >
-                        <Typography variant="caption" color="textSecondary">
-                          {partnerName}
-                        </Typography>
-                      </Box>
-                      <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        mt={1}
-                      >
-                        {featureIcons}
-                      </Box>
+
+                      <Typography variant="body2" fontWeight="bold">
+                        {partnerName}
+                      </Typography>
                     </CardContent>
                   </Card>
                 </ListItem>

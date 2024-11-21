@@ -21,8 +21,8 @@ namespace clone_oblt.Controllers
         {
             try
             {
-                var journeys = await _journeysApiService.GetJourneysAsync(journeyRequest);
-                return ResponseUtil.Success(journeys);                
+                var journeys = await _journeysApiService.GetJourneysAsync(journeyRequest); //This function basically returns us the bus ticket vendors' tickets
+                return ResponseUtil.Success(journeys);                                     //So people can see at what time there is a ticket and its details.
             }
             catch (Exception ex)
             {

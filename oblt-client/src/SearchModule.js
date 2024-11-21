@@ -13,6 +13,11 @@ import { useNavigate } from 'react-router-dom';
 const SearchModule = () => {
   const navigate = useNavigate();
 
+  //TODO noktayı sil
+  // phone kımsında media query yaz giriş için
+  //tarih kontrolü koy localdb'ye geçmişte kalmasın.
+
+
   // Calculate today's and tomorrow's dates
   const todayDate = new Date();
   const today = todayDate.toISOString().split('T')[0];
