@@ -174,11 +174,14 @@ const SearchModule = () => {
         const destination = data.find((loc) => loc.id === parsedDestination?.id);
   
         if (origin) {
-          setValue1(origin);
-          setInputValue1(origin.name);
+          setValue2(origin);
+          setInputValue2(origin.name);
+        } else if (data.length > 1) {
+          setValue2(data[1]);
+          setInputValue2(data[1]?.name || '');
         } else {
-          setValue1(data[0]);
-          setInputValue1(data[0]?.name || '');
+          setValue2(data[0]);
+          setInputValue2(data[0]?.name || '');
         }
   
         if (destination) {

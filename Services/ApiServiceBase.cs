@@ -19,9 +19,9 @@ namespace clone_oblt.Services
         protected readonly string _apiKey;
         public ApiServiceBase(HttpClient httpClient, IConfiguration configuration, string apiUrlKey)
         {
+            _apiKey = configuration["ApiSettings:ObiletApiKey"];
             _httpClient = httpClient;
             _apiUrl = configuration[apiUrlKey];
-            _apiKey = SingletonApiKeyUtil.GetInstance().ApiKey;
         }
 
         //Because all of the api endpoints that we are using right now are POST requests, I didn't implement any other type HttpMethod yet.

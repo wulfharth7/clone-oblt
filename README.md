@@ -34,15 +34,16 @@ Obilet Clone has been coded by me for Obilet Firm as an take-home assignment. Th
    - This was making the code a mess, less readable and non-modular.
    - Hence I've created builder classes for these request DTOs that exist in the `Builders` folder. It could've also been developed as Factory Method also.
    - But after inspecting and thinking of the codebase, Builder was the way to go.
-     
-2. **Singleton Api Key**:
-  - This isn't the best approach for using a basic api key like this.
-  - But I didn't want to risk in any way of leaking the api key and for the sake of the future of using more keys.
-  - Hence I've created a singleton api key class, that reads the apikey from file outside of the object and uses it throughout the project.
-
+    
 ## Key Features
 
 - **API Integration**: Modular services to handle API requests for bus locations, journeys, and session management.
 - **Modular Architecture**: Uses interfaces and builders for scalability and maintainability.
 - **Utilities**: Helper classes to simplify repetitive tasks such as setting headers and managing API responses.
+
+## How to Run the Program?
+- Install Dependencies
+- Change the INPUT_API_KEY_HERE in appsettings.json
+- Run
+
 

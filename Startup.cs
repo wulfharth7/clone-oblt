@@ -25,7 +25,6 @@ namespace clone_oblt
         {
             services.AddControllers();
             services.AddDistributedMemoryCache();
-            services.AddSingleton(SingletonApiKeyUtil.GetInstance());
             services.AddHttpClient<ISessionApiService, SessionApiService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IBusLocationApiService, BusLocationApiService>();
