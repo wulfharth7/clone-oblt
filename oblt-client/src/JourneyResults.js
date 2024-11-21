@@ -144,8 +144,22 @@ const JourneyResults = () => {
   });
 
   return (
-    <Box padding={4}>
-      <Button variant="contained" color="primary" onClick={handleBack}>
+    <Box padding={4} bgcolor="#f9f9f9" maxWidth="800px" margin="auto">
+      {/* Header Section */}
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        flexDirection={isDesktop ? 'row' : 'column'}
+        marginBottom={3}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<ArrowBack />}
+          onClick={handleBack}
+          sx={{ alignSelf: isDesktop ? 'flex-start' : 'center', marginBottom: isDesktop ? 0 : 2 }}
+        >
         Back
       </Button>
       <Typography variant="h5" gutterBottom>
