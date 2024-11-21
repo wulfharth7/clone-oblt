@@ -8,7 +8,11 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<SearchModule />} />
-        <Route path="/journey-results" element={<JourneyResults />} />
+        <Route
+  path="/seferler/:routeString/:departureDate"
+  element={<JourneyResults />}
+/>
+
       </Routes>
     </Router>
   );

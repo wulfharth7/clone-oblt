@@ -210,18 +210,23 @@ const JourneyResults = () => {
                 ? format(new Date(destinationStop.time), 'HH:mm')
                 : 'N/A';
 
-              const featureIcons = features.map((feature) => {
-                const featureIconUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/feature/${feature.id}.svg`;
-                return (
-                  <img
-                    key={feature.id}
-                    src={featureIconUrl}
-                    alt={feature.name}
-                    title={feature.name}
-                    style={{ height: '20px', margin: '0 4px' }}
-                  />
-                );
-              });
+                const featureIcons = features.map((feature) => {
+                  const featureIconUrl = `https://s3.eu-central-1.amazonaws.com/static.obilet.com/images/feature/${feature.id}.svg`;
+                  const handleError = (e) => {
+                    e.target.style.display = 'none'; 
+                  };
+                  return (
+                    <img
+                      key={feature.id}
+                      src={featureIconUrl}
+                      alt={feature.name}
+                      title={feature.name}
+                      style={{ height: '20px', margin: '0 4px' }}
+                      onError={handleError}
+                    />
+                  );
+                });
+                
 
               return (
                 <ListItem key={index}>
