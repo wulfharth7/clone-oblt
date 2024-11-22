@@ -17,7 +17,8 @@ namespace clone_oblt.Controllers
 
         //Done. That is how we use the react app in our MVC app.
 
-        //In this commit, the front-end build is up-to date.
+        //In this commit, the front-end build is up-to date. You can use it without building the frontend.
+        
         [HttpGet]
         public IActionResult Index()
         {

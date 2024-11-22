@@ -18,9 +18,7 @@ namespace clone_oblt
         {
             Configuration = configuration;
         }
-        //Most of the services are Scoped. Api-Key Singleton approach isn't the best approach.
-        //But just for this project and for the sake of keeping the api-key safe and not taking any risks, I've used singleton.
-        //Which reads the apikey from desktop file and uses all over the app.
+        //Most of the services are Scoped. For making the code more readable, its seperated as startup/program files.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
