@@ -1,6 +1,10 @@
 # Overview
 
 Obilet Clone has been coded by me for Obilet Firm as an take-home assignment. The project is structured around a modular architecture, using controllers, services, and utility classes to ensure separation of concerns and maintainability. External APIs are used in this project.
+## How to Run the Program?
+- Install Dependencies for ASP.NET. 
+- Change the INPUT_API_KEY_HERE in appsettings.json. 
+- Run
 
 # Project Structure
 ## Bus Location Search (Main Page)
@@ -41,9 +45,9 @@ Obilet Clone has been coded by me for Obilet Firm as an take-home assignment. Th
 - **Modular Architecture**: Uses interfaces and builders for scalability and maintainability.
 - **Utilities**: Helper classes to simplify repetitive tasks such as setting headers and managing API responses.
 
-## How to Run the Program?
-- Install Dependencies
-- Change the INPUT_API_KEY_HERE in appsettings.json
-- Run
-
+## Front-End
+- React is being used for this project. There are 2 pages as Index and Journey pages.
+- Both of them are available as screenshots in this readme as you can see.
+- Frontend starts running when the ASP.NET App starts running automatically. The production code is built with `npm run build` and exists under wwwroot.
+- However, if you want to look for the client-side code, its also available in this repository under the `oblt-client` folder as a standalone react app.
 

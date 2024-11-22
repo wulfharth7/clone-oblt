@@ -44,13 +44,17 @@ const SearchModule = () => {
 
   
 
-  const handleValueChange = (event, newValue, setValue, otherValue) => {
+  const handleValueChange = (event, newValue, setValue, otherValue, setInputValue) => {
     if (newValue && newValue.name === otherValue?.name) {
       alert('The selected locations cannot be the same.');
-      return; // Ignore the change
+      setInputValue(''); 
+      setValue('')
+      return; 
     }
-    setValue(newValue); // Update the selected value
+    setValue(newValue); 
+    setInputValue(newValue ? newValue.name : '');
   };
+  
 
   const onSwap = () => {
     handleSwap(
@@ -149,28 +153,28 @@ const SearchModule = () => {
             </Typography>
           </Box>
           <Autocomplete
-            value={value1}
-            inputValue={inputValue1}
-            onInputChange={(event, newInputValue, reason) =>
-              handleInputChange(
-                event,
-                newInputValue,
-                setInputValue1,
-                setSuggestions1,
-                reason,
-                fetchBusLocations
-              )
-            }
-            onChange={(event, newValue) =>
-              handleValueChange(event, newValue, setValue1, value2)
-            }
-            options={suggestions1}
-            getOptionLabel={(option) => option.name || ''}
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" fullWidth />
-            )}
-            freeSolo
-          />
+          value={value1}
+          inputValue={inputValue1}
+          onInputChange={(event, newInputValue, reason) =>
+            handleInputChange(
+              event,
+              newInputValue,
+              setInputValue1,
+              setSuggestions1,
+              reason,
+              fetchBusLocations
+            )
+          }
+          onChange={(event, newValue) =>
+            handleValueChange(event, newValue, setValue1, value2, setInputValue1)
+          }
+          options={suggestions1}
+          getOptionLabel={(option) => option.name || ''}
+          renderInput={(params) => (
+            <TextField {...params} variant="outlined" fullWidth />
+          )}
+          freeSolo
+        />
         </Box>
 
         {/* Swap Button */}
@@ -201,28 +205,28 @@ const SearchModule = () => {
             </Typography>
           </Box>
           <Autocomplete
-            value={value2}
-            inputValue={inputValue2}
-            onInputChange={(event, newInputValue, reason) =>
-              handleInputChange(
-                event,
-                newInputValue,
-                setInputValue2,
-                setSuggestions2,
-                reason,
-                fetchBusLocations
-              )
-            }
-            onChange={(event, newValue) =>
-              handleValueChange(event, newValue, setValue2, value1)
-            }
-            options={suggestions2}
-            getOptionLabel={(option) => option.name || ''}
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" fullWidth />
-            )}
-            freeSolo
-          />
+          value={value2}
+          inputValue={inputValue2}
+          onInputChange={(event, newInputValue, reason) =>
+            handleInputChange(
+              event,
+              newInputValue,
+              setInputValue2,
+              setSuggestions2,
+              reason,
+              fetchBusLocations
+            )
+          }
+          onChange={(event, newValue) =>
+            handleValueChange(event, newValue, setValue2, value1, setInputValue2)
+          }
+          options={suggestions2}
+          getOptionLabel={(option) => option.name || ''}
+          renderInput={(params) => (
+            <TextField {...params} variant="outlined" fullWidth />
+          )}
+          freeSolo
+        />
         </Box>
       </Box>
 
