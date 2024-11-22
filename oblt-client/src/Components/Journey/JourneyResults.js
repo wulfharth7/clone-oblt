@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Button,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  useMediaQuery,
-  useTheme,
-  IconButton,
+import {Box, Typography, CircularProgress, Button, Card, CardContent, List, ListItem, useMediaQuery, useTheme, IconButton,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import trLocale from 'date-fns/locale/tr';
+import { createSession } from '../../Actions/CreateSessionAction';
+import { fetchJourneys } from '../../Actions/FetchJourneyAction';
 
 const JourneyResults = () => {
   const theme = useTheme();
@@ -26,92 +17,16 @@ const JourneyResults = () => {
 
   const [loading, setLoading] = useState(true);
   const [journeys, setJourneys] = useState([]);
-
-  const createSession = async () => {
-    try {
-      const response = await fetch('https://localhost:7046/api/Session/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to create session: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (data.status === 'Success' && data.data) {
-        sessionStorage.setItem('session-id', data.data['session-id']);
-        sessionStorage.setItem('device-id', data.data['device-id']);
-        return true;
-      } else {
-        console.error('Failed to create session:', data.message);
-        return false;
-      }
-    } catch (error) {
-      console.error('Error creating session:', error);
-      return false;
-    }
-  };
-
-  const fetchJourneys = async () => {
-    try {
-      const sessionId = sessionStorage.getItem('session-id');
-      const deviceId = sessionStorage.getItem('device-id');
-
-      if (!sessionId || !deviceId) {
-        console.error('Session or Device ID is missing');
-        return [];
-      }
-
-      const requestBody = {
-        "device-session": {
-          "session-id": sessionId,
-          "device-id": deviceId,
-        },
-        "date": new Date().toISOString(),
-        "language": 'tr-TR',
-        "data": {
-          "origin-id": origin.id,
-          "destination-id": destination.id,
-          "departure-date": departureDate,
-        },
-      };
-
-      const response = await fetch(
-        'https://localhost:7046/api/Journeys/getjourneys',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-          credentials: 'include',
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch journeys: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (data && data.data) {
-        return data.data;
-      }
-      return [];
-    } catch (error) {
-      console.error('Error fetching journeys:', error);
-      return [];
-    }
-  };
-
+  //Here we see the Journey Index page.
+  //You can see the logos and feature icons of bus vendors. 
+  //Departure and arrival time, the bus stop names and the partner names are shown here. You can scroll down and see more. They are listed in a sorted way. Sorting happens in the server side.
+  //Its compatiable with mobile version. 
+  
   useEffect(() => {
     const initialize = async () => {
       const sessionId = sessionStorage.getItem('session-id');
       const deviceId = sessionStorage.getItem('device-id');
-
+  
       if (!sessionId || !deviceId) {
         const sessionCreated = await createSession();
         if (!sessionCreated) {
@@ -119,14 +34,14 @@ const JourneyResults = () => {
           return;
         }
       }
-
-      const journeysData = await fetchJourneys();
+  
+      const journeysData = await fetchJourneys(origin, destination, departureDate);
       setJourneys(journeysData);
       setLoading(false);
     };
-
+  
     initialize();
-  }, [origin.id, destination.id, departureDate]);
+  }, [origin.id, destination.id, departureDate]);  
 
   const handleBack = () => {
     navigate('/');
